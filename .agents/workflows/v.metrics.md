@@ -17,6 +17,10 @@ agent: "metrics-agent"
 1. Đọc agent definition: `agents/metrics-agent.md`
 2. Thực hiện toàn bộ quy trình trong agent definition
 3. Tạo `metrics-report.md`
+4. **Nếu feature có slice plan** (`slicing.active_variant`): thêm mục *Slice — dự đoán vs thực tế*
+   - Thực tế, đọc từ `slices[]` của `.flow-state.yaml`: số vòng review (`review_rounds`), số lần recheck (`recheck_count`), demo được duyệt hay không — cho từng slice
+   - Dự đoán: `v-flow slice show <feature> --json` → `metrics` (vd `rework_exposure`, `first_demo_points`)
+   - So hai bên (vd tổng `recheck_count` vs `rework_exposure`) và ghi nhận xét — đây là vòng phản hồi cho thử nghiệm cách cắt
 
 ## Options
 

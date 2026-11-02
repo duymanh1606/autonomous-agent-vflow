@@ -31,6 +31,14 @@ routing_rules:
 2. Thực hiện toàn bộ quy trình trong agent definition
 3. Tạo `validation-report.md` theo output template
 
+### Slice plan (khi feature có `slicing.active_variant`)
+- Bước 0 `v-flow validate <feature> --strict` đã chạy luật slice R1–R11 theo profile `strict` (lỗi → FAIL, `fail_reason = "plan_gap"`; variant stale → chạy `v-flow slice impact` trước)
+- **Thêm một mục ngữ nghĩa**: với mỗi slice, câu `demo` có khớp với AC suy ra cho slice không (`v-flow slice show <feature>` → mục "Chi tiết"). Demo hứa hành vi không có AC nào phủ, hoặc AC của slice không được demo chạm tới → ghi concern
+
+### --slice SLICE-n — kiểm tra lại sau khi spec đổi
+- Chỉ kiểm tra trong phạm vi slice đã đánh dấu `needs_recheck` / `needs_regression` (do `v-flow slice impact`): task, AC, TC của slice đó và các slice hậu duệ
+- Qua → `v-flow slice mark <feature> SLICE-n recheck` (xoá cờ, slice được chạy tiếp). Slice ngoài vùng ảnh hưởng không bị chặn
+
 ---
 
 ## 🔀 Routing Rules — Sau Master Check

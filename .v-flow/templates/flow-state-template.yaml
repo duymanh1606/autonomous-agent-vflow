@@ -201,6 +201,27 @@ fork_info:
 rewind_count: 0                         # số lần rewind (> 2 = cảnh báo)
 
 # ────────────────────────────────────────────────────────────────────────────
+# SLICE PLANNING (B.0c) — ghi bởi `v-flow slice use / mark / impact`, KHÔNG sửa tay
+# Không có `slicing.active_variant` = cả feature là một slice (pipeline như cũ)
+# ────────────────────────────────────────────────────────────────────────────
+# slicing:
+#   active_variant: mf-8
+#   graph_hash: 9f3a1c02
+#   locked: true
+#   locked_by: "Nguyen Van A"
+#   locked_at: "2026-11-02T11:00:00Z"
+# slices:
+#   - id: SLICE-1
+#     status: in_progress          # pending | in_progress | review | demo | done | blocked
+#     review_verdict: null
+#     demo_approved: false
+#     needs_recheck: false         # do `v-flow slice impact` đặt
+#     needs_regression: false
+#     recheck_reason: null
+#     review_rounds: 0             # số liệu thực tế cho M.0
+#     recheck_count: 0
+
+# ────────────────────────────────────────────────────────────────────────────
 # METADATA
 # ────────────────────────────────────────────────────────────────────────────
 spec_version_latest: "v1.0"

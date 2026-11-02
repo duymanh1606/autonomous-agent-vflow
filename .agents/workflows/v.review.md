@@ -21,6 +21,19 @@ agent: "review-agent"
 2. Thực hiện toàn bộ quy trình review trong agent definition
 3. Tạo `code-review-report.md`
 
+## Options
+
+### --slice SLICE-n (Slice Planning — B.0c)
+
+> Chỉ áp dụng khi feature có `slicing.active_variant`; không có thì bỏ qua `--slice`.
+
+1. Slice phải ở trạng thái `review` (đã `v-flow slice mark <feature> SLICE-n submit`)
+2. **Giới hạn ngữ cảnh**: chỉ xem diff của các task thuộc slice và AC suy ra cho slice (`v-flow slice show <feature>`)
+3. Ghi verdict: `v-flow slice mark <feature> SLICE-n review --verdict <APPROVED | APPROVED_WITH_NOTES | CHANGES_REQUESTED>`
+4. Verdict đạt → slice sang `demo`: người duyệt xem **câu `demo`** của slice chạy thật (**D.1 Demo**), rồi
+   - Đúng: `v-flow slice mark <feature> SLICE-n demo --approve` → slice `done`, lệnh in các slice vừa mở
+   - Hành vi sai: `v-flow slice mark <feature> SLICE-n demo --reject --reason "…"` → đây là **thay đổi spec**: sửa spec → `/v.sync` (gọi `v-flow slice impact`). Không sửa thẳng slice
+
 ---
 
 ## 🔀 Routing Rules — Sau Code Review
@@ -34,6 +47,10 @@ Verdict = APPROVED_WITH_NOTES
   → Route: Deploy 🚀
   → Notes phải được track trong knowledge/lessons-learned/ hoặc issue tracker
   → Sau deploy: /v.retrospective
+
+--slice SLICE-n, verdict đạt
+  → D.1 Demo (người duyệt) → slice done → /v.implement --slice <slice vừa mở>
+  → Mọi slice done → Deploy 🚀
 
 Verdict = CHANGES_REQUIRED
   → Route: Fix issues cụ thể → /v.review lại
@@ -75,4 +92,5 @@ routing:
 /v.review
 /v.review feature 001-user-login
 /v.review file src/auth/login.ts
+/v.review --slice SLICE-1
 ```

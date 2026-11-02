@@ -43,6 +43,16 @@ agent: "implement-agent"
 
 > ⚠️ Sau YOLO Mode, luôn chạy `/v.review` trước khi merge.
 
+### --slice SLICE-n (Slice Planning — B.0c)
+
+> Chỉ áp dụng khi feature có `slicing.active_variant` trong `.flow-state.yaml`. Không có active variant → bỏ qua `--slice`, chạy như hiện nay (cả feature là một slice).
+
+1. **Mở slice**: `v-flow slice mark <feature> SLICE-n start`
+   - Lệnh từ chối nếu còn `depends_on` chưa `done` (nêu tên slice còn thiếu) hoặc slice đang `needs_recheck` → **DỪNG**, báo human
+2. **Giới hạn ngữ cảnh**: chỉ đọc task (`units`) của slice trong `slices.md` / `slicing/variants/<active>.yaml`, cùng AC và TC suy ra cho slice đó (`v-flow slice show <feature>` → mục "Chi tiết"). Không implement task của slice khác
+3. Implement theo quy trình bình thường (TDD, `[GATE]`, `[CLARIFY]`…) — chỉ trên các task đó
+4. **Xong slice**: `v-flow slice mark <feature> SLICE-n submit` → route `/v.review --slice SLICE-n`
+
 ---
 
 ## 🔀 Routing Rules — Sau Implement
@@ -50,6 +60,10 @@ agent: "implement-agent"
 ```
 Tất cả tasks [x]
   → Route: /v.review
+
+--slice SLICE-n: tất cả task của slice [x]
+  → v-flow slice mark <feature> SLICE-n submit
+  → Route: /v.review --slice SLICE-n
 
 Có task fail / blocked
   → Báo cáo cho human review
@@ -89,4 +103,5 @@ active_concerns:
 ```
 /v.implement Feature 001-user-login
 /v.implement --yolo
+/v.implement --slice SLICE-1
 ```

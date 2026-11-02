@@ -82,3 +82,54 @@ Bước tiếp theo:
    ✅ Cursor (.cursorrules)
    ✅ Cursor Slash Commands (.cursor/rules/)
 
+
+── 2026-11-02T15:13:54.743Z  v-flow upgrade --dry-run  (exit 0, 271ms) ──
+
+⬆️  V Flow — Nâng cấp (DRY RUN)
+
+   Phiên bản nguồn: 1.5.0
+   Phiên bản đã cài: unknown
+
+📝 Templates
+   ✅ .v-flow/templates/ — synced
+      🔄 2 updated file(s)
+
+🤖 Agent Definitions & Commands
+   (Đồng bộ tới .agents/, .github/, .cursor/)
+
+   ✅ Đã đồng bộ: 4 mới, 26 cập nhật, 157 không đổi
+
+── Tổng kết (DRY RUN) ──
+
+   ✨ Mới:     4
+   🔄 Đã cập nhật:   28
+   ⏭️  Không thay đổi: 157
+
+   ℹ️  Chạy lại không có --dry-run để áp dụng.
+
+
+── 2026-11-02T15:14:54.966Z  v-flow upgrade  (exit 0, 521ms) ──
+
+⬆️  V Flow — Nâng cấp
+
+   Phiên bản nguồn: 1.5.0
+   Phiên bản đã cài: unknown
+
+📝 Templates
+   ✅ .v-flow/templates/ — synced
+      🔄 2 updated file(s)
+
+🤖 Agent Definitions & Commands
+   (Đồng bộ tới .agents/, .github/, .cursor/)
+
+   ✅ Đã đồng bộ: 4 mới, 26 cập nhật, 157 không đổi
+
+── Tổng kết ──
+
+   ✨ Mới:     4
+   🔄 Đã cập nhật:   28
+   ⏭️  Không thay đổi: 157
+
+   ✅ Đã nâng cấp lên v1.5.0
+   → Chạy: v-flow doctor để kiểm tra
+

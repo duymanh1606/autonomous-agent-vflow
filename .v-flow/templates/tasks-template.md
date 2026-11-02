@@ -35,6 +35,17 @@
 > **Mặc định tuần tự**: task KHÔNG gắn `[PARALLEL]` sẽ chạy lần lượt theo dependency order. Không cần nhãn riêng cho "tuần tự" — `[DEPENDS]` đã diễn đạt thứ tự.
 > **`[CLARIFY]` = chặn đoán mò**: thà gắn `[CLARIFY]` + ghi "Câu hỏi mở" còn hơn để Implement Agent giả định sai. Plan có `[CLARIFY]` chưa nên coi là "ready" hoàn toàn.
 
+### Seam tags (Slice Planning — B.0c, tuỳ chọn)
+
+> Giúp `v-flow slice` cắt feature thành lát dọc. Gắn khi biết; thiếu tag thì seam tương ứng không áp dụng (không báo lỗi).
+
+| Tag | Ý nghĩa | Ví dụ |
+|-----|---------|-------|
+| `[FOUNDATION]` | Nền không phục vụ luồng nào → SLICE-0 | Schema, auth middleware, khung dự án |
+| `[EXTERNAL]` | Phụ thuộc hệ thống ngoài (slice chứa nó là HITL) | Cổng thanh toán, SSO của đối tác |
+| `[RESILIENCE]` | Retry / fallback — phải đi cùng task đầu tiên dùng nó | Retry gọi cổng thanh toán |
+| `[READ: Đối tượng]` / `[WRITE: Đối tượng]` | Đọc / ghi một đối tượng (seam `read-write`) | `[READ: Order]`, `[WRITE: Order]` |
+
 ### Dependency notation
 - `depends: T-xxx` = phải hoàn thành T-xxx trước
 - `depends: T-xxx, T-yyy` = phải hoàn thành cả hai
@@ -88,7 +99,7 @@
 - **[DB]** (nếu Type=DB): `users` ALTER `last_login_at timestamp null` · **DDL**: `ALTER TABLE users ADD COLUMN last_login_at timestamp NULL;` (up) / `ALTER TABLE users DROP COLUMN last_login_at;` (down) · migration `..._add_last_login.sql`
 - **Truy vấn** (nếu query không hiển nhiên): trỏ plan §3.5 — vd `products WHERE deleted_at IS NULL` + index `idx_products_deleted_at`
 - **Dependency**: T-xxx (hoặc Không)
-- **REQ / UC mapping**: REQ-xxx (UC-xx)
+- **REQ / UC mapping**: REQ-xxx (UC-xx.main, UC-xx-E1)  ← ghi tới **mức luồng**; chỉ ghi `UC-xx` = phục vụ mọi luồng của UC
 - **Done khi**: đáp ứng **AC-NN** tương ứng trong spec §4 (ghi rõ mã, không chỉ "test pass")
 - **Test liên quan**: TC-xx
 - **TDD** (Red→Green) — viết test TRƯỚC, rồi code cho pass:

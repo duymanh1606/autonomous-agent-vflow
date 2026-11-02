@@ -19,6 +19,10 @@ agent: "sync-agent"
 1. Đọc agent definition: `agents/sync-agent.md`
 2. Thực hiện toàn bộ quy trình trong agent definition
 3. Báo cáo sync summary
+4. **Nếu feature có `slicing.active_variant`**: chạy `v-flow slice impact <feature>`
+   - Chuỗi tính: bước/REQ bị sửa → luồng chứa bước đó + luồng E/A rẽ từ bước đó → AC → task → slice
+   - Slice chứa phần đổi → `needs_recheck` (slice đã `done` được mở lại với ID cũ); slice hậu duệ → `needs_regression`
+   - Task mới chưa thuộc slice nào (R1) → gán tay vào variant, hoặc `v-flow slice plan <feature> --keep-done` rồi `v-flow slice use … --unlock --reason "…"`
 
 ## Options
 
@@ -38,6 +42,9 @@ Hiển thị delta analysis mà không thay đổi files.
 ```
 Sync hoàn tất
   → Route: /v.check (BẮT BUỘC — validation-report cũ không còn giá trị)
+
+Sync hoàn tất + có slice plan
+  → Route: /v.check --slice <từng slice needs_recheck>; slice khác chạy tiếp
 
 Change quá lớn (architecture impact)
   → Route: /v.plan (re-plan từ đầu)

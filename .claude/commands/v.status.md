@@ -40,6 +40,13 @@ Hiển thị **dashboard trực quan** trạng thái pipeline của feature.
 | Tất cả tasks [x] | `/v.review` |
 | Review = CHANGES_REQUIRED | Fix → `/v.review` |
 | Review = APPROVED | 🚀 Deploy → Retrospective → Metrics |
+| Test xong, chưa có slice plan (feature lớn) | `/v.slice` (B.0c, tuỳ chọn) |
+| Có slice `needs_recheck` | `/v.check --slice SLICE-n` |
+| Slice `pending` có mọi `depends_on` done | `/v.implement --slice SLICE-n` |
+| Slice ở `review` | `/v.review --slice SLICE-n` |
+| Slice ở `demo` | 👤 D.1 Demo — người duyệt `v-flow slice mark … demo --approve` |
+
+**Slice plan**: nếu `.flow-state.yaml` có `slicing.active_variant`, hiển thị thêm **một dòng cho mỗi slice** (trạng thái, review verdict, demo, cờ `needs_recheck` / `needs_regression`) — CLI `v-flow status <feature>` đã in sẵn.
 
 ---
 

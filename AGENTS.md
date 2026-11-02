@@ -136,6 +136,7 @@ Safety-net tool-agnostic: `v-flow watch` giám sát `.v-flow/**` và log mọi t
 | `/v.ba-to-ptyc` | S.1.6 | **BA to PTYC Agent — spec.md → PTYC.docx (Phân tích Yêu cầu chuẩn ISO), optional Doc Export** |
 | `/v.plan` | B.0a | Plan Agent — create technical plan + tasks (`--with-security`, `--with-ux`, `--with-api`) |
 | `/v.test` | B.0b | Test Agent — create test cases from spec |
+| `/v.slice` | B.0c | **Slice Planning — cắt feature thành lát dọc demo được, so sánh variant, người chọn + khóa (`v-flow slice …`)** |
 | `/v.check` | R.0 | Master Check — cross-validate Spec ↔ Plan ↔ Tests + explicit routing |
 | `/v.implement` | B.1 | Implement Agent — TDD coding, concerns handling (`--yolo` for auto-mode) |
 | `/v.review` | R.1 | Adversarial Code Review — ≥ 3 issues + routing rules |
