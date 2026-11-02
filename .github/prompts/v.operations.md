@@ -1,0 +1,70 @@
+---
+description: "Operations Agent — rà soát vận hành định kỳ / phân loại incident production rồi route flow khắc phục (O.0)"
+phase: "O.0"
+agent: "operations-agent"
+---
+
+# /v.operations
+
+> Orchestration wrapper cho **Operations Agent**. Đọc `agents/operations-agent.md` để thực hiện core logic.
+> Khác `/v.hotfix` (vào thẳng flow khẩn P1/P2): `/v.operations` là **điểm vào O.0 thường xuyên** — rà soát vận hành sau deploy (M.0 → O.0) hoặc phân loại tín hiệu production trước khi quyết định flow.
+
+## Điều kiện sử dụng
+
+- Có alert/log/user report từ production cần đánh giá, **hoặc**
+- Rà soát vận hành định kỳ sau khi feature đã deploy (chu trình M.0 → O.0)
+
+## Execution
+1. Đọc agent definition: `agents/operations-agent.md`
+2. Thực hiện toàn bộ quy trình: assess severity (P1–P4) → root cause sơ bộ + scope → route
+3. Ghi `operations-report.md` (+ `incidents/INC-XXX.md` nếu là incident) theo `.v-flow/templates/operations-report-template.md`
+
+---
+
+## 🔀 Routing Rules — Sau Operations
+
+```
+Severity = P1 / P2 (production down / nghiêm trọng)
+  → Route: /v.hotfix (O.0 → B.1 → R.1 → O.0)
+
+Severity = P3 và cần root cause + regression prevention
+  → Route: /v.bugfix (S.1 → B.0 → B.1 → R.1)
+
+Severity = P4 / thay đổi nhỏ (<5 files)
+  → Route: /v.quickfix (S.1 nhanh → B.1 → R.1)
+
+Không phải lỗi / chỉ theo dõi
+  → Route: monitor — ghi nhận vào knowledge base, không trigger fix
+```
+
+> Closed-loop: feedback từ production quay lại pipeline (spec/test/knowledge) để incident không lặp lại.
+
+## Input
+- Tín hiệu production: alert / log / user report (mô tả qua argument hoặc đính kèm)
+- `.v-flow/features/NNN-feature/` *(nếu incident gắn với feature cụ thể)*
+- `.v-flow/constitution.md`
+
+## Output
+- `.v-flow/features/NNN-feature/operations-report.md` *(hoặc thư mục feature liên quan)*
+- `.v-flow/incidents/INC-XXX.md` *(nếu là incident — đánh số tăng dần)*
+
+## Ví dụ
+
+```
+/v.operations
+/v.operations "API /checkout trả 500 tăng đột biến từ 14:00"
+```
+
+---
+
+## Cập nhật State & Session
+
+**Append vào `_session.md`**:
+```markdown
+### [O.0] Operations — [YYYY-MM-DD]
+- **Agent**: Operations Agent
+- **Severity**: [P1 | P2 | P3 | P4]
+- **Root cause (sơ bộ)**: [...]
+- **Route decision**: [hotfix | bugfix | quickfix | monitor]
+- **Routing**: → [next step]
+```

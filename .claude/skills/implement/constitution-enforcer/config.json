@@ -1,0 +1,16 @@
+{
+  "name": "constitution-enforcer",
+  "version": "1.0",
+  "description": "Validates code against constitution.md rules during B.1 and R.1",
+  "agent": "implement",
+  "phase": ["B.1", "R.1"],
+  "triggers": ["pre_commit", "review_check"],
+  "dependencies": ["_shared/constitution-reader", "_shared/context-reader"],
+  "config": {
+    "severity_levels": ["error", "warning", "info"],
+    "default_categories": ["naming", "architecture", "testing", "security", "api"],
+    "scan_mode": "changed_files",
+    "fail_on": "error",
+    "report_format": "markdown"
+  }
+}

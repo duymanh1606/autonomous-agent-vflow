@@ -1,0 +1,104 @@
+{
+  "_comment": "Prototype Skill Configuration — override per-project bằng cách copy file này vào [project-root]/.v-flow/skill-config/prototype.json",
+
+  "branch_selection": {
+    "default_for_ambiguous": "auto",
+    "_comment_default_for_ambiguous": "auto | logic | ui — khi câu hỏi không rõ branch nào và user AFK",
+
+    "auto_rules": {
+      "_comment": "Khi default_for_ambiguous = 'auto', agent dùng bảng này để chọn branch dựa trên context signal (theo thứ tự ưu tiên)",
+      "priority_order": [
+        {
+          "signal": "REQ type là E (Event) hoặc S (State) — ví dụ REQ-E01, REQ-S03",
+          "branch": "LOGIC",
+          "reason": "State/event REQs thường có behavior phức tạp cần validate qua real cases"
+        },
+        {
+          "signal": "Ambiguity marker nằm trong UI section của spec (section 'Màn hình', 'UI', 'Layout', 'Wireframe')",
+          "branch": "UI",
+          "reason": "Ambiguity ở UI section → câu hỏi về giao diện"
+        },
+        {
+          "signal": "Ambiguity marker nằm trong AC section có từ khóa state/flow ('trạng thái', 'transition', 'khi nào', 'nếu', 'sau khi')",
+          "branch": "LOGIC",
+          "reason": "AC phức tạp về flow/state → cần validate behavior"
+        },
+        {
+          "signal": "Module context là backend service / API / domain logic",
+          "branch": "LOGIC",
+          "reason": "Backend context → behavior question nhiều hơn UI"
+        },
+        {
+          "signal": "Module context là frontend page / component / screen",
+          "branch": "UI",
+          "reason": "Frontend context → layout/UX question nhiều hơn logic"
+        },
+        {
+          "signal": "Không detect được signal nào rõ ràng",
+          "branch": "LOGIC",
+          "reason": "LOGIC prototype an toàn hơn khi không chắc — TUI ít side-effects hơn UI variant"
+        }
+      ]
+    },
+
+    "afk_handling": {
+      "_comment": "Khi user không available để xác nhận branch/question",
+      "wait_before_default_seconds": 0,
+      "_comment_wait": "0 = không chờ, default ngay theo auto_rules. Tăng lên nếu muốn agent chờ user trả lời trước.",
+      "always_log_assumption": true,
+      "_comment_log": "Luôn ghi rõ assumption vào đầu prototype README và prototype-notes.md: 'User AFK — defaulted to LOGIC based on [signal]'"
+    },
+
+    "multi_marker_priority": {
+      "_comment": "Khi spec có nhiều REQ với ambiguity markers, agent chọn theo thứ tự này",
+      "priority_order": [
+        "REQ được chỉ định qua --req flag (override tất cả)",
+        "REQ type S (State) — state machine thường block nhiều REQ khác nhất",
+        "REQ type E (Event) — event handling thường có side effects phức tạp",
+        "REQ type U (Ubiquitous) — nếu core business rule chưa rõ",
+        "REQ type O (Optional) — ít priority nhất",
+        "Nếu nhiều REQ cùng priority — chọn REQ đầu tiên trong spec (top-down)"
+      ],
+      "max_questions_per_prototype": 1,
+      "_comment_max": "Mỗi prototype chỉ trả lời 1 câu hỏi. Nếu cần nhiều → chạy /v.prototype nhiều lần (xem prototype-agent.md §Scope giới hạn)"
+    }
+  },
+
+  "ui_branch": {
+    "default_variants": 3,
+    "max_variants": 5,
+    "default_framework": "html",
+    "_comment_default_framework": "html | react | vue | angular | next",
+    "default_subshape": "A",
+    "_comment_default_subshape": "A = embed in existing page (preferred) | B = new throwaway route (last resort)"
+  },
+
+  "logic_branch": {
+    "preferred_runtime_order": ["detect", "ask"],
+    "_comment_preferred_runtime_order": "detect = auto-detect từ project files; ask = hỏi user nếu không detect được"
+  },
+
+  "ambiguity_markers": {
+    "keywords_vi": [
+      "chưa rõ", "cần thảo luận", "phụ thuộc", "có thể là",
+      "TBD", "tùy thiết kế", "xem mockup", "unclear", "to be decided",
+      "cần xác nhận", "đang xem xét", "chờ feedback"
+    ],
+    "keywords_en": [
+      "TBD", "unclear", "to be decided", "pending", "to discuss",
+      "needs clarification", "may be", "tbc"
+    ],
+    "patterns": [
+      "Acceptance Criteria trống",
+      "State transitions chưa được validate",
+      "UI section không có wireframe"
+    ]
+  },
+
+  "output": {
+    "prototype_dir": ".v-flow/features/{NNN}/prototype/",
+    "notes_file": ".v-flow/features/{NNN}/prototype-notes.md",
+    "cleanup_after_verdict": true,
+    "_comment_cleanup": "Tự động gợi ý xóa prototype/ sau khi ghi verdict"
+  }
+}

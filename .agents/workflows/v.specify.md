@@ -1,0 +1,118 @@
+---
+description: "BA Agent — Phân tích yêu cầu và tạo Specification theo EARS notation"
+phase: "S.1"
+agent: "ba-agent"
+---
+
+# /v.specify
+
+> Orchestration wrapper cho **BA Agent**. Đọc `agents/ba-agent.md` để thực hiện core logic.
+
+## Điều kiện tiên quyết
+- `.v-flow/constitution.md` phải tồn tại
+- Nếu legacy project: `.v-flow/context.md` nên có (để kiểm tra No-Go Zones)
+
+## Execution
+1. Đọc agent definition: `agents/ba-agent.md`
+2. Thực hiện **Bước 0: Business Verification Gate** (xem `agents/ba-agent.md`)
+3. Nếu gate PASSED (hoặc skipped): thực hiện toàn bộ quy trình còn lại trong agent definition
+4. Áp dụng command options bên dưới (nếu có)
+
+## Options
+
+### --skip-check (Bỏ qua Business Verification)
+
+Bỏ qua hoàn toàn Business Verification Gate (Bước 0). Dùng khi:
+- Feature quá nhỏ, scope rõ ràng, không cần verify
+- Đang iterate nhanh, đã verify trước đó rồi
+- Module chưa có `business-quiz.md` và muốn bỏ qua cảnh báo
+
+```
+/v.specify --skip-check Tạo tính năng ...
+```
+
+### --dual (Dual BA Mode)
+
+Thêm flag `--dual` để kích hoạt **N-Round Adaptive Dual BA loop** sau khi tạo spec.
+
+| Loại công việc | Khuyến nghị |
+|----------------|-------------|
+| Hotfix / Bug fix | ❌ Skip |
+| Task nhỏ (< 1 ngày) | ❌ Skip |
+| Feature nhỏ/vừa/lớn (S/M/L) | ✅ Khuyến nghị |
+| Core module / Security-critical | ✅ Bắt buộc |
+
+**Luồng khi dùng `--dual`:**
+
+Sau khi `spec.md` v1.0 được tạo, agent sẽ:
+1. Tạo `spec-review-log.md` từ `.v-flow/templates/spec-review-log-template.md`
+2. Thông báo: `👉 Chạy /v.ba-critic để bắt đầu Round 1 review.`
+
+Sau đó user lặp:
+```
+/v.ba-critic  →  ITERATE  →  BA Agent sửa spec
+/v.ba-critic  →  CONVERGED  →  /v.plan
+```
+
+---
+
+## 🔀 Routing Rules — Sau Specify
+
+```
+Spec v1.0 tạo xong (không --dual)
+  → ⏳ Chờ human approve spec
+  → Sau approve:
+      [Optional S.1.5] /v.prototype  ← nếu spec có ambiguity (BA Agent sẽ gợi ý)
+      → /v.plan + /v.test (SONG SONG)
+
+Spec v1.0 tạo xong (có --dual)
+  → /v.ba-critic (Round 1)
+
+Spec đã sửa (bump version)
+  → /v.sync → /v.check
+```
+
+## Cập nhật State & Session
+
+**Cập nhật `.flow-state.yaml`**:
+```yaml
+current_phase: "S.1"
+phase_status: "done"
+artifacts:
+  spec:
+    exists: true
+    version: "v1.0"
+    status: "draft"
+spec_version_latest: "v1.0"
+business_verification:
+  status: "passed"              # hoặc "passed_with_warnings" | "skipped"
+  modules_verified:
+    - module: "domain-{tên}"
+      module_card_version: "{X.Y}"
+      verdict: "passed"
+      verified_at: "{ngày}"
+```
+
+**Append vào `_session.md`**:
+```markdown
+### [S.1] Specify — [YYYY-MM-DD]
+- **Agent**: BA Agent
+- **Output**: spec.md v1.0
+- **Module cards used**: [module] v[X.Y]   ← từ business verification
+- **Biz verification**: [passed | passed_with_warnings | skipped]
+- **Requirements**: [N] total (U:[N] E:[N] S:[N] O:[N])
+- **Human checkpoint**: pending approval
+```
+
+---
+
+## Ví dụ
+
+```
+/v.specify Tạo tính năng đăng nhập bằng email/password,
+hỗ trợ remember me, forgot password, và social login (Google, Facebook)
+```
+
+```
+/v.specify --dual Tạo tính năng payment gateway tích hợp VNPay và MoMo
+```

@@ -1,0 +1,44 @@
+# ptyc.meta.yaml — Metadata trang bìa / ký / căn cứ cho PTYC (BA điền).
+# Copy file này vào .v-flow/features/{NNN}/ptyc.meta.yaml và THAY mọi <...> bằng giá trị THẬT.
+# Nội dung nghiệp vụ (chức năng, requirements...) KHÔNG ở đây — agent lấy từ spec.md.
+#
+# ⚠️ KHÔNG để nguyên số ví dụ. doc_code & tên file tự sinh từ `pyc_ref.no` —
+#    điền sai số PYC thì cả tên tài liệu & tên file đều sai.
+
+doc:
+  system_name: "HỆ THỐNG IOC"        # Tên hệ thống (in trang bìa)
+  project_code: "IOC"                 # Mã hiệu dự án
+  doc_code: ""                        # ĐỂ TRỐNG → tự sinh "PTYC_<project_code>_<pyc_ref.no>_<năm>_V1.0".
+                                      # Chỉ điền nếu muốn override thủ công.
+  place: "Hà Nội"                     # Nơi phát hành
+  date: "<MM/YYYY>"                   # Tháng/năm phát hành tài liệu, vd 06/2026
+
+# §2.1 Căn cứ Phiếu Yêu Cầu (PYC) — `no` là NGUỒN DUY NHẤT cho doc_code & tên file
+pyc_ref:
+  no: "<SỐ PYC>"                      # vd 01 — lấy đúng số trên Phiếu Yêu Cầu của feature này
+  date: "<DD/MM/YYYY>"               # ngày trên PYC
+  unit: "<ĐƠN VỊ YÊU CẦU>"          # vd Phòng Kỹ thuật Công nghệ
+
+# Trang ký (để trống approver nếu ký tay)
+signers:
+  preparer: "<NGƯỜI LẬP>"           # NV phân tích nghiệp vụ
+  approver1: ""
+  approver2: ""
+  approver3: ""
+
+# Bảng ghi nhận thay đổi (A=Tạo mới, M=Sửa, D=Xóa)
+change_log:
+  - date: "<MM/YYYY>"
+    position: "-"
+    amd: "A"
+    source: "<BA>"
+    old_ver: "-"
+    desc: "Tạo mới tài liệu"
+    new_ver: "V1.0"
+
+# §1.4 Tài liệu tham khảo (tùy chọn)
+references:
+  - name: "PYC số <SỐ PYC>"
+    date: "<DD/MM/YYYY>"
+    source: "<ĐƠN VỊ>"
+    note: "-"

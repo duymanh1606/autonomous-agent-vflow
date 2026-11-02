@@ -1,0 +1,22 @@
+# V-Flow Project Config
+# File: .v-flow/config.yaml  (project-global — khác .flow-state.yaml vốn per-feature)
+# Nơi PERSIST đáp án cho các `setup_questions` của skills. Tạo 1 lần khi onboard dự án.
+# Các skill/agent ĐỌC file này; nếu thiếu → dùng default trong từng skill config.json.
+
+# ── Testing (tdd-driver) ─────────────────────────────────────────────────
+test_framework: "jest"        # jest | mocha | vitest | flutter_test | pytest | other
+coverage_target: 80           # %
+test_location: "test/"        # colocated | test/ | __tests__/ | spec/
+test_command: "npm test"      # lệnh chạy full test suite của dự án
+
+# ── Lint / Constitution (constitution-enforcer) ──────────────────────────
+lint_command: "npm run -s lint"   # check-constitution.sh đọc field này; rỗng → autodetect
+
+# ── No-Go Zones (no-go-zone-guard) ───────────────────────────────────────
+nogo_strict_mode: "strict"    # strict (BLOCK) | warning (cần approval) | log
+nogo_source: "both"           # context.md | constitution.md | both
+
+# ── Git workflow (implement-agent — Branch & Failure Recovery) ───────────
+branch_prefix: "feat/"        # vd feat/001-user-login
+commit_per_task: true         # commit incremental mỗi task xong
+stuck_retry_limit: 3          # fail Red→Green ≥ N lần → DỪNG thrash, escalate

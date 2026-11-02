@@ -1,0 +1,16 @@
+{
+  "name": "metrics-collector",
+  "version": "1.0",
+  "description": "Collects and analyzes Agent performance metrics after each feature cycle",
+  "agent": "metrics",
+  "phase": ["M.0"],
+  "triggers": ["post_review", "manual"],
+  "dependencies": ["_shared/constitution-reader"],
+  "config": {
+    "metrics_categories": ["per_agent", "per_pipeline", "per_feature"],
+    "comparison_threshold": 5,
+    "report_format": "markdown",
+    "include_recommendations": true,
+    "benchmark_window": "last_5_features"
+  }
+}

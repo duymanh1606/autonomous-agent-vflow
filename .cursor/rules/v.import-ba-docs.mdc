@@ -1,0 +1,223 @@
+---
+globs: *
+description: "Import BA Docs Agent — Trích xuất tài liệu BA từ Google NotebookLM vào Module Cards (Optional — U.0d)"
+phase: "U.0d"
+agent: "import-ba-docs-agent"
+optional: true
+dependency: "notebooklm-py (unofficial — pip install notebooklm-py)"
+---
+
+# /v.import-ba-docs
+
+> Orchestration wrapper cho **Import BA Docs Agent**. Đọc `agents/import-ba-docs-agent.md` để thực hiện core logic.
+
+> ⚠️ **OPTIONAL PHASE** — Phase U.0d không bắt buộc.
+> Phụ thuộc vào `notebooklm-py` — thư viện unofficial, có thể break bất cứ lúc nào.
+> Nếu không dùng được, BA export thủ công (PDF/copy-paste) → đặt vào `.v-flow/modules/{module}/raw/`
+
+---
+
+## Prerequisites
+
+Trước khi chạy, cần đảm bảo:
+
+```
+1. pip install "notebooklm-py[browser]"
+2. playwright install chromium
+3. notebooklm login          ← Mở browser, login Google account
+4. notebooklm list           ← Verify thấy notebooks của BA
+```
+
+Nếu bất kỳ bước nào fail → thông báo user và **hướng dẫn fallback thủ công**.
+
+---
+
+## Modes
+
+### Mode B: `--interactive` — User chọn cách nhóm sources (MẶC ĐỊNH)
+
+```
+/v.import-ba-docs --notebook <id> --interactive
+/v.import-ba-docs --notebook <id>                ← mặc định = interactive
+```
+
+Dành cho: **1 notebook lớn chứa nhiều sources thuộc nhiều domain khác nhau.**
+User sẽ được hỏi cách nhóm sources → tạo nhiều Module Cards.
+
+### Mode A: `--module <name>` — 1 Notebook → 1 Module Card
+
+```
+/v.import-ba-docs --notebook <id> --module <name>
+```
+
+Dành cho: **BA đã tổ chức 1 notebook/domain.** Tất cả sources trong notebook → 1 module card.
+
+### Mode A+: `--module <name> --sources <ids>` — Chọn sources cụ thể
+
+```
+/v.import-ba-docs --notebook <id> --module <name> --sources src1,src2,src3
+```
+
+Dành cho: **Chọn thủ công** một số sources từ notebook lớn → 1 module card.
+
+### Mode C: `--auto-split` — AI đề xuất cách nhóm
+
+```
+/v.import-ba-docs --notebook <id> --auto-split
+```
+
+Dành cho: **Notebook rất lớn, nhiều sources.** AI phân tích titles + summaries → đề xuất nhóm → user confirm.
+
+### Utility: `--raw-only` — Chỉ lấy raw data
+
+```
+/v.import-ba-docs --notebook <id> --module <name> --raw-only
+```
+
+Chỉ download raw materials, không generate AI drafts.
+
+### Utility: `--refresh` — Cập nhật module card
+
+```
+/v.import-ba-docs --notebook <id> --module <name> --refresh
+```
+
+Re-download raw materials mới, so sánh diff với bản cũ → output diff report (sources UNCHANGED/MODIFIED/NEW/DELETED + affected drafts). Hỏi user: `"Cập nhật drafts tự động? (Y/n/manual review)"`.
+Sections đã được Human verify (không còn tag `[⚠️ AI-inferred]`) → KHÔNG ghi đè, chỉ ghi warning.
+
+---
+
+## Execution
+
+1. Đọc agent definition: `agents/import-ba-docs-agent.md`
+2. Đọc Skill scan strategy: `skills/understand/ba-docs-scanner/SKILL.md`
+3. Thực hiện quy trình trong agent definition theo mode được chọn
+
+### Bước 1: Kiểm tra điều kiện
+
+1. Kiểm tra `notebooklm` CLI: `notebooklm --version`
+2. Kiểm tra auth: `notebooklm auth check`
+3. Kiểm tra `.v-flow/` đã tồn tại
+
+### Bước 2: Kết nối notebook & liệt kê sources
+
+```bash
+notebooklm use <notebook_id>
+notebooklm status
+notebooklm source list --json
+```
+
+### Bước 3: Xác định mapping Sources → Module Cards
+
+- **Interactive (mặc định)**: Hiển thị sources → user nhóm thủ công
+- **1:1 (--module)**: Tất cả sources → 1 module
+- **Auto-split (--auto-split)**: AI đề xuất nhóm từ titles + summaries → user confirm
+
+### Bước 4: Trích xuất raw materials (cho mỗi module)
+
+```bash
+mkdir -p .v-flow/modules/{module-name}/raw/sources/
+
+# Fulltext từng source
+notebooklm source fulltext $source_id -o raw/sources/{title}.txt
+
+# Mind-map, briefing doc, study guide
+notebooklm generate mind-map -s src1 -s src2
+notebooklm download mind-map raw/domain-map.json
+notebooklm generate report --format briefing-doc --wait
+notebooklm download report raw/overview.md
+```
+
+> ⚠️ Nếu `generate report` fail (rate limit) → skip, ghi warning. Raw fulltext đủ để tiếp tục.
+> ⚠️ Với `--raw-only` → DỪNG ở đây.
+
+### Bước 5: AI generate Module Card drafts
+
+> **TRƯỚC KHI GENERATE**: Agent PHẢI đọc 2 files:
+> 1. 📖 `skills/understand/ba-docs-scanner/SKILL.md` — scan strategy chi tiết cho từng loại draft
+> 2. 📖 `skills/understand/ba-docs-scanner/gotchas.md` — anti-patterns và quality gate
+
+Thực hiện generate theo hướng dẫn trong Agent + Skill. Kết quả:
+
+| File | Khi nào tạo |
+|------|------------|
+| `SKILL.md` | Luôn tạo (entry point + glossary + constraints) |
+| `use-cases.md` | Luôn tạo (E2E flows + business rules trích dẫn) |
+| `cross-service.md` | Nếu BA docs đề cập tích hợp |
+| `state-diagram.md` | Nếu BA docs mô tả trạng thái |
+| `permissions.md` | Nếu BA docs mô tả phân quyền |
+| `db.md` | Nếu BA docs mô tả data model |
+| `ui-flows.md` | Nếu BA docs mô tả giao diện |
+| `api-specs.md` | ⏳ Placeholder (chờ code scan) |
+| `tech-context.md` | ⏳ Placeholder (chờ code scan) |
+
+### Bước 6: Output summary
+
+Hiển thị: files đã tạo, thống kê (BR count, flows, glossary terms), files cần BA review, bước tiếp theo.
+
+---
+
+## Merge với U.0b (Code Scan)
+
+> 📖 Xem chi tiết: `skills/understand/ba-docs-scanner/merge-rules.md`
+
+Khi chạy `/v.understand --module {tên}` trên module đã có U.0d data → merge BA content với code scan results.
+
+---
+
+## Fallback khi không có notebooklm-py
+
+```
+⚠️ notebooklm-py không khả dụng. Hãy export thủ công:
+
+1. Mở NotebookLM web (https://notebooklm.google.com)
+2. Với mỗi domain/module:
+   a. Copy nội dung sources → lưu vào .v-flow/modules/{module}/raw/sources/
+   b. Generate Study Guide trên web → download → lưu vào raw/
+   c. Screenshot Mind Map → lưu vào raw/
+3. Chạy /v.import-ba-docs --module {tên} --raw-only
+   (skip NotebookLM, chỉ đọc files trong raw/ để generate drafts)
+```
+
+---
+
+## Ví dụ sử dụng
+
+```bash
+/v.import-ba-docs --notebook abc123
+/v.import-ba-docs --notebook abc123 --module domain-wo
+/v.import-ba-docs --notebook abc123 --auto-split
+/v.import-ba-docs --notebook abc123 --module domain-wo --raw-only
+/v.import-ba-docs --notebook abc123 --module domain-wo --refresh
+```
+
+---
+
+## Bước tiếp theo sau khi chạy
+
+```
+1. BA review: use-cases.md, SKILL.md — xác nhận business rules     [BẮT BUỘC]
+2. BA xóa tag [⚠️ AI-inferred] sau khi verify                      [BẮT BUỘC]
+3. (Song song) Chạy /v.understand --module {tên}           [BẮT BUỘC]
+   → AI scan codebase → điền api-specs, tech-context, ui-flows, db, state-diagram, permissions
+   → Merge với U.0d data nếu có
+4. Tech Lead review: SKILL.md — set Last verified date              [BẮT BUỘC]
+5. Tiến sang S.0a hoặc S.1                                         [Khi sẵn sàng]
+```
+
+---
+
+## Cập nhật State & Session
+
+**Không cập nhật `.flow-state.yaml`** — U.0d là optional, project-level.
+
+**Append vào `_session.md`** (nếu đang trong feature context):
+```markdown
+### [U.0d] Import BA Docs — [YYYY-MM-DD]
+- **Agent**: Import BA Docs Agent
+- **Source**: NotebookLM notebook [ID]
+- **Mode**: [interactive | 1:1 | auto-split | raw-only]
+- **Modules created**: [N]
+- **Files generated**: [list]
+- **Routing**: → /v.understand --module (deep scan)
+```

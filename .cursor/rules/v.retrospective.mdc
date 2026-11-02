@@ -1,0 +1,81 @@
+---
+globs: *
+description: "Retrospective Agent — Tổng kết sau khi hoàn thành feature/epic"
+phase: "After R.1"
+agent: "retrospective-agent"
+---
+
+# /v.retrospective
+
+> Orchestration wrapper cho **Retrospective Agent**. Đọc `agents/retrospective-agent.md` để thực hiện core logic.
+
+## Điều kiện tiên quyết
+- Feature đã qua **R.1** (Code Review) với verdict APPROVED hoặc APPROVED_WITH_NOTES
+- Hoặc: Sprint vừa kết thúc
+- `spec.md`, `tasks.md`, `_session.md` phải tồn tại
+
+## Execution
+1. Đọc agent definition: `agents/retrospective-agent.md`
+2. Thực hiện toàn bộ quy trình trong agent definition
+3. Tạo `retrospective-report.md`
+4. Đề xuất updates cho Knowledge Base
+
+## Options
+
+### --auto — Bỏ qua interactive questions
+```
+/v.retrospective --auto
+```
+Tự phân tích hoàn toàn từ artifacts, không hỏi user. Ghi rõ "Auto-generated" trong report.
+
+### --sprint — Retro cho cả sprint
+```
+/v.retrospective --sprint 3
+```
+Tổng kết tất cả features trong sprint N.
+
+---
+
+## 🔀 Routing Rules — Sau Retrospective
+
+```
+Retrospective xong
+  → Route: Feature complete — archive
+  → Nếu /v.metrics chưa chạy → /v.metrics
+
+Phát hiện constitution cần update
+  → Đề xuất /v.constitute (update version)
+
+Có action items
+  → Track trong sprint tiếp theo
+```
+
+## Cập nhật State & Session
+
+**Cập nhật `.flow-state.yaml`**:
+```yaml
+current_phase: "complete"
+phase_status: "done"
+```
+
+**Append vào `_session.md`**:
+```markdown
+### [Retro] Retrospective — [YYYY-MM-DD]
+- **Agent**: Retrospective Agent
+- **Output**: `retrospective-report.md`
+- **Key lessons**: [top 3 lessons]
+- **Action items**: [N] items
+- **Knowledge Base updated**: [yes/no — files touched]
+- **Routing**: → Feature complete
+```
+
+---
+
+## Ví dụ
+
+```
+/v.retrospective
+/v.retrospective feature 001-user-login
+/v.retrospective --auto
+/v.retrospective --sprint 3
+```

@@ -1,0 +1,47 @@
+{
+  "name": "ba-docs-scanner",
+  "version": "1.0",
+  "description": "Import và trích xuất tài liệu BA từ NotebookLM hoặc raw sources",
+  "agent": "understand",
+  "phase": ["U.0d"],
+  "triggers": ["import_ba_docs", "import_ba_docs_refresh"],
+  "dependencies": ["understand/codebase-scanner"],
+  "config": {
+    "source_types": ["notebooklm", "pdf", "markdown", "html"],
+    "output_dir": ".v-flow/modules/{domain}/raw/",
+    "merge_strategy": "append_with_dedup",
+    "extraction_fields": ["business_rules", "domain_concepts", "user_stories", "acceptance_criteria", "glossary_terms"]
+  },
+  "setup_questions": [
+    {
+      "id": "source_type",
+      "question": "Nguồn tài liệu BA?",
+      "options": ["notebooklm", "pdf", "markdown", "html", "mixed"],
+      "default": "mixed",
+      "description": "mixed = auto-detect. notebooklm = dùng notebooklm-py (unofficial, có thể fail)."
+    },
+    {
+      "id": "auto_glossary",
+      "question": "Tự động extract domain glossary từ tài liệu?",
+      "type": "boolean",
+      "default": true,
+      "description": "Extract thuật ngữ nghiệp vụ → append vào knowledge/domain-glossary.md"
+    },
+    {
+      "id": "conflict_resolution",
+      "question": "Khi tài liệu mới conflict với module cards hiện có?",
+      "options": ["overwrite", "merge", "flag"],
+      "default": "flag",
+      "description": "flag = highlight conflict, để human quyết định. merge = ưu tiên tài liệu mới."
+    }
+  ],
+  "hooks": {
+    "pre_import": "Check source files exist → validate format → check dependency (notebooklm-py nếu cần)",
+    "post_import": "Generate AI drafts cho Module Cards → mark [⚠️ AI-inferred] → suggest BA review"
+  },
+  "memory": {
+    "file": "ba-import-history.log",
+    "format": "[date] | [source_type] | [files_imported] | [glossary_terms] | [conflicts] | [modules_updated]",
+    "purpose": "Track BA doc imports — detect stale modules cần refresh"
+  }
+}

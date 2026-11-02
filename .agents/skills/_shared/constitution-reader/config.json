@@ -1,0 +1,52 @@
+{
+  "name": "constitution-reader",
+  "version": "1.0",
+  "description": "Load và parse constitution.md, extract rules áp dụng cho phase hiện tại",
+  "agent": "_shared",
+  "phase": ["All"],
+  "triggers": ["session_start", "phase_change"],
+  "dependencies": [],
+  "config": {
+    "constitution_path": ".v-flow/constitution.md",
+    "fallback_behavior": "warn_and_continue",
+    "cache_duration": "session",
+    "section_mapping": {
+      "S.1": ["§4", "§5", "§9"],
+      "B.0a": ["§1", "§4", "§5", "§7", "§8"],
+      "B.0b": ["§3", "§5"],
+      "B.1": ["§1", "§2", "§3", "§5", "§6", "§7", "§8"],
+      "R.0": ["§5", "§7"],
+      "R.1": ["§1", "§2", "§3", "§5", "§6", "§7", "§8"]
+    }
+  },
+  "setup_questions": [
+    {
+      "id": "extraction_depth",
+      "question": "Default extraction depth khi không có mapping rõ ràng?",
+      "options": ["shallow", "medium", "deep"],
+      "default": "medium",
+      "description": "shallow = chỉ đọc headings. medium = headings + rules. deep = toàn bộ nội dung."
+    },
+    {
+      "id": "version_check",
+      "question": "Có kiểm tra constitution version vs .flow-state.yaml không?",
+      "type": "boolean",
+      "default": true
+    },
+    {
+      "id": "mismatch_action",
+      "question": "Khi phát hiện constitution version mismatch?",
+      "options": ["warn", "block", "auto-sync"],
+      "default": "warn"
+    }
+  ],
+  "hooks": {
+    "pre_read": "Check constitution.md tồn tại → nếu không → fallback_behavior",
+    "post_read": "Compare constitution version với .flow-state.yaml → warn nếu mismatch"
+  },
+  "memory": {
+    "file": "constitution-reads.log",
+    "format": "[date] | [agent] | [phase] | [sections_read] | [version] | [warnings]",
+    "purpose": "Track agent nào đọc sections nào — dùng cho audit và optimization"
+  }
+}

@@ -1,0 +1,208 @@
+# V Flow State Schema
+# File: .v-flow/features/NNN-feature-name/.flow-state.yaml
+# Tạo tự động bởi /v.specify — cập nhật tại mỗi phase transition
+# ⚠️ KHÔNG sửa tay — dùng /v.status để xem; phase tự chuyển khi chạy command tương ứng (vd /v.plan, /v.check, /v.implement)
+
+# ────────────────────────────────────────────────────────────────────────────
+# IDENTITY
+# ────────────────────────────────────────────────────────────────────────────
+feature_id: "NNN"                        # e.g. "001"
+feature_name: "ten-feature"              # e.g. "user-login"
+created_at: "YYYY-MM-DD"
+last_updated: "YYYY-MM-DD"
+project_type: "greenfield"               # greenfield | legacy
+schema_version: "2.0"                    # artifact-schema generation — validator dùng để gate; bump khi template đổi schema
+
+# ────────────────────────────────────────────────────────────────────────────
+# GOVERNANCE — Risk tier + approval metadata (validator gate; --strict chặn CI)
+# ────────────────────────────────────────────────────────────────────────────
+risk_tier: "medium"                      # low | medium | high | critical — quyết định gate bắt buộc
+                                         #   low: 0 approval · medium: spec · high: spec+security · critical: spec+security+tech_lead
+approvals:                               # mỗi approval cần actor + timestamp để audit được
+  # - role: spec                         # gate được approve: spec | security | tech_lead | ...
+  #   actor: "Nguyen Van A"
+  #   decision: approved                 # approved | rejected
+  #   timestamp: "2026-06-06T10:00:00Z"
+
+# ────────────────────────────────────────────────────────────────────────────
+# PIPELINE STATE — Phase hiện tại
+# ────────────────────────────────────────────────────────────────────────────
+current_phase: "S.1"                     # U.0 | S.0a | S.0b | S.1 | S.1.5 | B.0a | B.0b | R.0 | B.1 | R.1 | M.0 | O.0
+phase_status: "in_progress"             # pending | in_progress | awaiting_human | done | blocked
+
+# Phase history (tự động append)
+phase_history:
+  - phase: "S.1"
+    entered_at: "YYYY-MM-DD"
+    exited_at: null
+    reason: "initial specification"
+
+# ────────────────────────────────────────────────────────────────────────────
+# ARTIFACTS — Trạng thái từng artifact
+# ────────────────────────────────────────────────────────────────────────────
+artifacts:
+  spec:
+    exists: true
+    version: "v1.0"
+    status: "draft"                      # draft | reviewed | approved
+    human_approved: false
+    approved_by: null
+    approved_at: null
+
+  plan:
+    exists: false
+    synced_to_spec: null                 # spec version plan này được sync với
+    human_approved: false
+
+  tasks:
+    exists: false
+    synced_to_spec: null
+    total: 0
+    completed: 0
+    in_progress: 0
+
+  test_cases:
+    exists: false
+    synced_to_spec: null
+    total: 0
+    human_approved: false
+
+  validation_report:
+    exists: false
+    verdict: null                        # PASS | PASS_WITH_CONCERNS | FAIL | PENDING_RECHECK
+    spec_version_checked: null
+    concerns_count: 0
+    issues_critical: 0
+    issues_major: 0
+
+  code_review:
+    exists: false
+    verdict: null                        # APPROVED | APPROVED_WITH_NOTES | CHANGES_REQUIRED
+
+  ui_mockups:                            # ảnh mockup — prototype/human đặt (KHÔNG do BA ingest ở S.1)
+    exists: false
+    count: 0                             # số ảnh mockup
+    sources: []                          # [pdf, docx, md, figma] — nguồn ảnh nếu có
+    screens: []                          # [UC-01, UC-02, ...] — UC có mockup
+    dir: null                            # path: .v-flow/features/NNN/ui/mockups/
+
+  prototype:
+    exists: false
+    branch: null                         # LOGIC | UI
+    mode: null                           # from-mockup (tái hiện) | explore (variant) — chỉ UI branch
+    verdict: null                        # VALIDATED | REJECTED | INCONCLUSIVE
+    approved_by: null                    # tên + vai trò người duyệt — BẮT BUỘC khi verdict=VALIDATED
+    approved_at: null                    # YYYY-MM-DD — thời điểm duyệt
+    question: null                       # câu hỏi prototype trả lời
+    req_refs: []                         # [REQ-xxx, ...] từ spec
+    notes_file: null                     # path: .v-flow/features/NNN/prototype-notes.md
+    approved_ref: null                   # path ui/approved/UC-NN.* — render đã chốt (mode=from-mockup, KHÔNG xóa)
+    skipped: false
+    skip_reason: null                    # lý do skip nếu skipped = true
+
+# ────────────────────────────────────────────────────────────────────────────
+# ROUTING — Quyết định routing tại mỗi gate
+# ────────────────────────────────────────────────────────────────────────────
+routing:
+  # Sau Master Check (R.0)
+  after_master_check:
+    last_verdict: null
+    last_fail_reason: null               # spec_gap | plan_gap | test_gap | constitution_violation | nogo_violation
+    route_decision: null                 # implement | re_specify | re_plan | re_test
+
+  # Sau Code Review (R.1)
+  after_review:
+    last_verdict: null
+    route_decision: null                 # deploy | fix_and_re_review | re_specify
+
+  # Sau Operations (O.0)
+  after_operations:
+    priority: null                       # P1 | P2 | P3 | P4
+    route_decision: null                 # hotfix_b1 | bugfix_full | lessons_learned
+
+# ────────────────────────────────────────────────────────────────────────────
+# HUMAN CHECKPOINTS — Các điểm cần người approve
+# ────────────────────────────────────────────────────────────────────────────
+human_checkpoints:
+  spec_approved: false
+  prototype_verdict_confirmed: false    # human xác nhận prototype verdict (S.1.5, optional)
+  plan_approved: false
+  master_check_approved: false          # human xác nhận PASS/PASS_WITH_CONCERNS
+  implementation_approved: false        # human kick off implement sau check
+  review_approved: false               # human approve để deploy
+  deploy_approved: false
+
+# Checkpoint hiện tại đang chờ (nếu có)
+awaiting_checkpoint: null               # e.g. "spec_approved" | null
+
+# ────────────────────────────────────────────────────────────────────────────
+# BUSINESS VERIFICATION — Cognitive gate trước khi /v.specify viết spec
+# ────────────────────────────────────────────────────────────────────────────
+business_verification:
+  status: null                          # null | pending | passed | passed_with_warnings | failed | skipped
+  verified_at: null
+  verified_by: null                     # tên human BA/PO đã đánh giá
+  skip_reason: null                     # lý do skip nếu status = "skipped"
+
+  # Danh sách modules đã được verify (append mỗi lần chạy gate)
+  modules_verified:
+    # - module: "domain-orders"
+    #   module_card_version: "1.2"      # version lúc verify — dùng để detect staleness
+    #   quiz_status: "ready"            # "draft" | "ready" — quiz đã được human review chưa?
+    #   must_score: "3/3"               # N/Total câu MUST đúng
+    #   should_score: "2/3"             # N/Total câu SHOULD đúng
+    #   verdict: "passed"               # "passed" | "passed_with_warnings" | "failed"
+    #   verified_at: "YYYY-MM-DD"
+    #   warnings: []                    # List SHOULD questions AI trả lời sai/thiếu
+
+# ────────────────────────────────────────────────────────────────────────────
+# CONCERNS — Từ Master Check, carry forward đến Implement
+# ────────────────────────────────────────────────────────────────────────────
+active_concerns:
+  # - id: "W-001"
+  #   description: "Rate limiting chưa được spec rõ"
+  #   source: "R.0 Master Check"
+  #   resolved: false
+  #   resolved_at: null
+  #   resolved_how: null
+
+# ────────────────────────────────────────────────────────────────────────────
+# BLOCKED — Lý do bị block (nếu có)
+# ────────────────────────────────────────────────────────────────────────────
+blocked: false
+blocked_reason: null                    # e.g. "Đang chờ API backend từ team khác"
+blocked_since: null
+blocked_dependencies:                   # Cross-feature dependency tracking (Thread Isolation)
+  # - feature: "001-login"
+  #   reason: "Cần auth API endpoint"
+  #   unblocked_when: "001-login phase >= R.1"
+
+# ────────────────────────────────────────────────────────────────────────────
+# B.0 OUTPUTS — Map-Reduce: optional agents và outputs song song
+# ────────────────────────────────────────────────────────────────────────────
+b0_outputs:
+  plan: { exists: false }
+  tests: { exists: false }
+  security: { exists: false, skipped: true, reason: null }
+  ux: { exists: false, skipped: true, reason: null }
+  api_contracts: { exists: false, skipped: true, reason: null }
+
+# ────────────────────────────────────────────────────────────────────────────
+# TIME TRAVEL — Fork & Rewind tracking
+# ────────────────────────────────────────────────────────────────────────────
+fork_info:
+  is_fork: false                        # true nếu đây là bản fork
+  forked_from: null                     # feature gốc (nếu is_fork = true)
+  forked_at_phase: null
+  forked_at_spec: null
+  fork_reason: null
+  active_forks: []                      # danh sách bản forks đang active
+
+rewind_count: 0                         # số lần rewind (> 2 = cảnh báo)
+
+# ────────────────────────────────────────────────────────────────────────────
+# METADATA
+# ────────────────────────────────────────────────────────────────────────────
+spec_version_latest: "v1.0"
+session_file: ".v-flow/features/NNN-feature-name/_session.md"
+notes: ""

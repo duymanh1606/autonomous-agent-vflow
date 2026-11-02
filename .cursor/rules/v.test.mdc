@@ -1,0 +1,68 @@
+---
+globs: *
+description: "Test Agent — Tạo Test Cases toàn diện từ Specification"
+phase: "B.0b"
+agent: "test-agent"
+---
+
+# /v.test
+
+> Orchestration wrapper cho **Test Agent**. Đọc `agents/test-agent.md` để thực hiện core logic.
+
+Chạy **SONG SONG** với `/v.plan`.
+
+## Điều kiện tiên quyết
+- `spec.md` phải tồn tại và đã **Approved**
+- `constitution.md` phải tồn tại
+- `.flow-state.yaml` phải tồn tại
+
+## Execution
+1. Đọc agent definition: `agents/test-agent.md`
+2. Thực hiện toàn bộ quy trình trong agent definition
+3. Tạo `test-cases.md` với test matrix đầy đủ
+
+---
+
+## 🔀 Routing Rules — Sau Test
+
+```
+Test cases tạo xong
+  → Nếu /v.plan chưa xong → Chờ Plan Agent
+  → Nếu /v.plan đã xong   → /v.check (Master Check)
+
+Không đủ thông tin viết test
+  → Route: Quay về S.1 (BA Agent clarify REQ)
+```
+
+## Cập nhật State & Session
+
+**Cập nhật `.flow-state.yaml`**:
+```yaml
+current_phase: "B.0b"
+phase_status: "done"
+artifacts:
+  test_cases:
+    exists: true
+    total: [N]
+    synced_to_spec: "v1.0"
+```
+
+**Append vào `_session.md`**:
+```markdown
+### [B.0b] Test — [YYYY-MM-DD]
+- **Agent**: Test Agent
+- **Output**: test-cases.md ([N] test cases)
+- **Test Matrix**: Unit: [N], Integration: [N], E2E: [N]
+- **Coverage**: [N]/[N] REQ covered (100%)
+- **Edge cases**: [N] edge case tests
+- **Routing**: → /v.check (khi /v.plan xong)
+```
+
+---
+
+## Ví dụ
+
+```
+/v.test
+/v.test feature 001-user-login
+```

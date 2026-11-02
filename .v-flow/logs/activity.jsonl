@@ -1,0 +1,3 @@
+{"ts":"2026-11-02T11:10:34.226Z","type":"cli","cmd":"init","invocation":["init","."],"exitCode":0,"durationMs":559,"cwd":"/home/duymanh/lab/autonomous-agent-vflow","version":"1.5.0"}
+{"ts":"2026-11-02T11:10:34.350Z","type":"cli","cmd":"install","invocation":["hooks","install"],"exitCode":0,"durationMs":59,"cwd":"/home/duymanh/lab/autonomous-agent-vflow","version":"1.5.0"}
+{"ts":"2026-11-02T11:12:04.097Z","type":"cli","cmd":"check","invocation":["check"],"exitCode":0,"durationMs":76,"cwd":"/home/duymanh/lab/autonomous-agent-vflow","version":"1.5.0"}

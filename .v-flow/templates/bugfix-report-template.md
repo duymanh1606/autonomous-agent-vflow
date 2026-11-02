@@ -1,0 +1,195 @@
+# Template: Bugfix Report — Báo cáo tổng kết Bug Fix
+
+> Được tạo sau khi fix hoàn tất và review APPROVED — Phase R.1
+> Mục đích: Trả lời 6 câu hỏi để check và review lại bất kỳ lúc nào
+> Bug ID: [BUG-ID]
+> Ngày fix: [YYYY-MM-DD]
+> Người fix: [Agent/Dev]
+
+---
+
+## 1. Bug là gì?
+
+### Mô tả bug
+<!-- 2-3 câu tóm tắt bug -->
+
+### Reproduction Steps
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+### Severity & Impact
+| | Giá trị |
+|---|---|
+| **Severity** | P1 / P2 / P3 / P4 |
+| **Affected Users** | [mô tả ảnh hưởng] |
+| **Affected Module** | [tên module/domain] |
+
+### Behavior cũ (lỗi)
+- **BUG-B01**: Khi [điều kiện], hệ thống [hành vi sai]
+
+---
+
+## 2. Nguyên nhân gốc là gì?
+
+### Root Cause
+<!-- Mô tả nguyên nhân GỐC — KHÔNG phải symptom -->
+<!-- "API trả 500" là symptom. "SQL không escape ký tự đặc biệt" là root cause -->
+
+| | Giá trị |
+|---|---|
+| **Root Cause** | [Mô tả nguyên nhân gốc — cụ thể] |
+| **Confidence** | high / medium / low |
+| **Bug Location** | [file:line — vị trí chính xác code gây bug] |
+
+### Why It Happened
+<!-- Tại sao bug xuất hiện — thiếu validation, logic error, race condition, missing test, v.v. -->
+
+### Contributing Factors
+<!-- Yếu tố góp phần — nếu có: thiếu test, code review miss, spec không rõ, v.v. -->
+
+---
+
+## 3. Giải pháp sửa là gì?
+
+### Fix Approach
+<!-- Mô tả APPROACH tổng thể — không chi tiết code -->
+
+### Behavior mới (đúng)
+- **BUG-E01**: Khi [điều kiện], hệ thống phải [hành vi đúng]
+
+### Behavior giữ nguyên (không thay đổi)
+- **BUG-U01**: Khi [điều kiện], hệ thống phải TIẾP TỤC [behavior giữ nguyên]
+- **BUG-U02**: Khi [điều kiện], hệ thống phải TIẾP TỤC [behavior giữ nguyên]
+
+---
+
+## 4. Đã sửa như thế nào?
+
+### Thay đổi chi tiết
+
+| # | Thay đổi | Lý do |
+|---|----------|-------|
+| 1 | [Mô tả thay đổi cụ thể 1] | [Tại sao cần thay đổi này] |
+| 2 | [Mô tả thay đổi cụ thể 2] | [Tại sao] |
+
+### Code Changes Summary
+<!-- Tóm tắt thay đổi logic chính — không paste full code -->
+```
+Trước: [logic cũ — 1-2 dòng tóm tắt]
+Sau:   [logic mới — 1-2 dòng tóm tắt]
+```
+
+### Tests đã viết
+
+| Tier | Test ID | Mô tả | Kết quả |
+|------|---------|--------|---------|
+| T1 🔴 | TC-R01 | [Test reproduce bug] | ✅ PASS (sau fix) |
+| T2 🟢 | TC-G01 | [Test verify fix] | ✅ PASS |
+| T3 🛡️ | TC-P01 | [Test regression prevention] | ✅ PASS |
+| T3 🛡️ | TC-P02 | [Test regression prevention] | ✅ PASS |
+
+---
+
+## 5. File nào đã sửa?
+
+### Files Modified (Implementation)
+
+| # | File | Loại thay đổi | Lines changed |
+|---|------|---------------|---------------|
+| 1 | [path/to/file1] | Modified | [+N, -N] |
+| 2 | [path/to/file2] | Modified | [+N, -N] |
+
+### Files Created (Tests)
+
+| # | File | Mô tả |
+|---|------|-------|
+| 1 | [path/to/test1] | [Test gì] |
+
+### Files NOT Modified (Confirmed unchanged)
+
+| # | File | Lý do giữ nguyên |
+|---|------|-------------------|
+| 1 | [path/to/file3] | [Nằm trong BUG-U scope, không cần thay đổi] |
+
+---
+
+## 6. File nào bị ảnh hưởng?
+
+### Direct Impact (files sửa trực tiếp)
+
+| File | Ảnh hưởng | Đã test? |
+|------|-----------|----------|
+| [file1] | [mô tả ảnh hưởng] | ✅ T2 |
+| [file2] | [mô tả ảnh hưởng] | ✅ T2 |
+
+### Indirect Impact (files phụ thuộc / callers)
+
+| File | Quan hệ | Ảnh hưởng | Đã test? |
+|------|---------|-----------|----------|
+| [file3] | Calls [function đã sửa] | [mô tả ảnh hưởng] | ✅ T3 |
+| [file4] | Imports [module đã sửa] | [mô tả ảnh hưởng] | ✅ T3 |
+
+### No Impact (confirmed safe)
+
+| File/Module | Lý do không ảnh hưởng |
+|-------------|----------------------|
+| [module X] | Không depend vào code đã sửa |
+
+---
+
+## 7. Verification Summary
+
+### Test Results
+
+| Loại | Passed | Total | Coverage |
+|------|--------|-------|----------|
+| T1 (Red → Green) | [N] | [N] | 100% |
+| T2 (Verify fix) | [N] | [N] | 100% |
+| T3 (No regression) | [N] | [N] | 100% |
+| Full test suite | [N] | [N] | [XX]% |
+
+### Acceptance Criteria
+
+| AC | Mô tả | Kết quả |
+|----|-------|---------|
+| AC-1 | Bug behavior không còn xảy ra | ✅ / ❌ |
+| AC-2 | Expected behavior hoạt động đúng | ✅ / ❌ |
+| AC-3 | Unchanged behaviors vẫn hoạt động | ✅ / ❌ |
+| AC-4 | Tất cả 3-tier tests pass | ✅ / ❌ |
+| AC-5 | Full test suite pass | ✅ / ❌ |
+
+---
+
+## 8. Review Decision
+
+| | Kết quả |
+|---|---|
+| **Review Verdict** | ✅ APPROVED / ⚠️ APPROVED WITH NOTES / ❌ CHANGES REQUIRED |
+| **Reviewed by** | [Agent/Human] |
+| **Review date** | [YYYY-MM-DD] |
+
+### Notes (nếu APPROVED WITH NOTES)
+<!-- Tech debt, follow-up tasks, monitoring needed -->
+
+---
+
+## 9. Lessons Learned (Optional)
+
+### Cần cải thiện
+<!-- Nếu bug có thể tránh được — làm sao? -->
+
+| Cải thiện | Loại | Action |
+|-----------|------|--------|
+| [Thêm validation cho input X] | Prevention | [tạo task / update constitution] |
+| [Thêm test cho case Y] | Detection | [tạo test / update test suite] |
+
+### Cập nhật Knowledge Base
+- [ ] Thêm vào `knowledge/lessons-learned/` nếu có pattern mới
+- [ ] Cập nhật `constitution.md` nếu cần rule mới
+- [ ] Cập nhật `context.md` nếu phát hiện No-Go Zone mới
+
+---
+
+> **Generated by**: Bugfix Flow (`/v.bugfix`)
+> **Template**: `templates/bugfix-report-template.md`

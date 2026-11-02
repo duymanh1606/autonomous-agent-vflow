@@ -1,0 +1,56 @@
+{
+  "name": "codebase-scanner",
+  "version": "1.0",
+  "description": "Scan codebase structure, detect frameworks, modules, entry points, No-Go Zones",
+  "agent": "understand",
+  "phase": ["U.0"],
+  "triggers": ["understand_all", "understand_module", "understand_refresh"],
+  "dependencies": [],
+  "config": {
+    "scan_depth": "full",
+    "ignore_patterns": ["node_modules", ".git", "dist", "build", "coverage", "__pycache__"],
+    "framework_detection": true,
+    "module_detection": true,
+    "entry_point_detection": true,
+    "output_format": "markdown"
+  },
+  "setup_questions": [
+    {
+      "id": "scan_scope",
+      "question": "Scope scan?",
+      "options": ["full", "src-only", "custom"],
+      "default": "full",
+      "description": "full = toàn bộ project. src-only = chỉ src/. custom = specify paths."
+    },
+    {
+      "id": "include_tests",
+      "question": "Có scan test files không?",
+      "type": "boolean",
+      "default": true,
+      "description": "Scan tests giúp đánh giá coverage hiện tại."
+    },
+    {
+      "id": "include_config",
+      "question": "Có scan config files không?",
+      "type": "boolean",
+      "default": true,
+      "description": "Scan configs giúp detect linting, CI/CD, và DevOps setup."
+    },
+    {
+      "id": "max_file_size_kb",
+      "question": "Max file size để đọc nội dung (KB)?",
+      "type": "number",
+      "default": 500,
+      "description": "Files lớn hơn sẽ chỉ đọc header. Giúp tránh timeout."
+    }
+  ],
+  "hooks": {
+    "pre_scan": "Check project structure exists → detect package manager → detect language/framework",
+    "post_scan": "Generate context.md draft → mark all inferences with [⚠️ AI-inferred]"
+  },
+  "memory": {
+    "file": "scan-history.log",
+    "format": "[date] | [scope] | [files_scanned] | [modules_detected] | [frameworks] | [nogo_zones] | [duration_sec]",
+    "purpose": "Track scan efficiency — optimize future scans"
+  }
+}

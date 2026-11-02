@@ -1,0 +1,26 @@
+{
+  "setup_questions": [
+    {
+      "id": "split_above_complexity",
+      "question": "Tách task khi vượt mức complexity nào?",
+      "options": ["M", "L"],
+      "default": "L",
+      "description": "Task vượt mức này sẽ được suggest split thành nhiều task nhỏ hơn. Dùng tier S/M/L thay cho ước tính giờ."
+    },
+    {
+      "id": "require_gate_for_legacy",
+      "question": "Bắt buộc [GATE] cho task modify legacy code?",
+      "type": "boolean",
+      "default": true
+    }
+  ],
+  "hooks": {
+    "pre_breakdown": "Load plan.md → extract component list + REQ mapping",
+    "post_breakdown": "Verify: mỗi REQ có task, no circular DEPENDS, exactly 1 ENTRYPOINT"
+  },
+  "memory": {
+    "file": "task-history.log",
+    "format": "[date] | [feature] | [total_tasks] | [entry_points] | [gates] | [parallel_groups]",
+    "purpose": "Track task planning patterns — dùng cho /v.retrospective"
+  }
+}

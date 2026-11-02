@@ -1,0 +1,33 @@
+{
+  "_note": "setup_questions là PROMPT. Đáp án resolve persist vào .v-flow/config.yaml (xem .v-flow/templates/vflow-config-template.yaml). Skill đọc .v-flow/config.yaml trước, thiếu mới dùng default dưới đây.",
+  "answers_persisted_to": ".v-flow/config.yaml",
+  "setup_questions": [
+    {
+      "id": "test_framework",
+      "question": "Test framework nào đang dùng?",
+      "options": ["jest", "mocha", "vitest", "flutter_test", "pytest", "other"],
+      "default": "jest"
+    },
+    {
+      "id": "coverage_target",
+      "question": "Coverage target tối thiểu (%)?",
+      "type": "number",
+      "default": 80
+    },
+    {
+      "id": "test_location",
+      "question": "Test files đặt ở đâu?",
+      "options": ["colocated", "test/", "__tests__/", "spec/"],
+      "default": "test/"
+    }
+  ],
+  "hooks": {
+    "pre_implement": "Đọc test-cases.md → map TC-xxx cho TASK hiện tại",
+    "post_implement": "Chạy full test suite → verify không regression"
+  },
+  "memory": {
+    "file": "tdd-history.log",
+    "format": "[date] | [feature] | [task] | [tests_written] | [tests_passed] | [refactor_needed]",
+    "purpose": "Track TDD discipline — Agent đọc để biết patterns trước đó"
+  }
+}

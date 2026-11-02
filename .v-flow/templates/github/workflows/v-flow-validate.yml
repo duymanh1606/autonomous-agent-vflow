@@ -1,0 +1,30 @@
+# V-Flow — validate spec/plan/tasks/test-cases on every PR.
+# Scaffolded by `v-flow init`. Gates the spec-driven pipeline so plan/task
+# artifacts can't drift. Legacy features (older schema_version) won't fail —
+# their new-schema warnings stay advisory until migrated.
+name: V-Flow Validate
+
+on:
+  pull_request:
+    paths:
+      - '.v-flow/features/**'
+      - '.v-flow/constitution.md'
+  push:
+    branches: [main, master]
+    paths:
+      - '.v-flow/features/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install v-flow CLI
+        run: npm install -g v-flow-cli
+      - name: Validate artifacts (strict — warnings block too)
+        run: v-flow validate --strict
+      # Optional — also lint source vs constitution [LINT:xxx] rules:
+      # - run: v-flow validate --constitution

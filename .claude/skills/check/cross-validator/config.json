@@ -1,0 +1,33 @@
+{
+  "setup_questions": [
+    {
+      "id": "strictness",
+      "question": "Mức độ strict của validation?",
+      "options": ["strict", "standard", "lenient"],
+      "default": "standard",
+      "description": "strict = mọi warning → concern. standard = balanced. lenient = chỉ critical gaps → fail."
+    },
+    {
+      "id": "concern_threshold",
+      "question": "Max concerns trước khi đổi verdict sang FAIL?",
+      "type": "number",
+      "default": 5,
+      "description": "Nếu > N concerns → FAIL thay vì PASS WITH CONCERNS."
+    },
+    {
+      "id": "require_security_section",
+      "question": "Bắt buộc plan có security section?",
+      "type": "boolean",
+      "default": true
+    }
+  ],
+  "hooks": {
+    "pre_check": "Build traceability matrix từ spec + plan + tasks + test-cases",
+    "post_check": "Write validation-report.md + update .flow-state.yaml + append _session.md"
+  },
+  "memory": {
+    "file": "check-history.log",
+    "format": "[date] | [feature] | [verdict] | [critical] | [major] | [concerns] | [coverage_pct]",
+    "purpose": "Track validation quality — dùng cho /v.metrics"
+  }
+}

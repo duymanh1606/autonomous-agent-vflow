@@ -1,0 +1,28 @@
+{
+  "vflow-log": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "v-flow log --hook antigravity --event PostToolUse",
+            "timeout": 15
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "v-flow log --hook antigravity --event Stop",
+            "timeout": 15
+          }
+        ],
+        "matcher": "*"
+      }
+    ]
+  }
+}

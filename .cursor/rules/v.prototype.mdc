@@ -1,0 +1,122 @@
+---
+globs: *
+description: "Prototype Agent — Reproduce (dựng render chốt từ mockup qua DESIGN.md) hoặc Explore (variant throwaway) để chốt giao diện/validate ambiguity trước khi lên plan"
+phase: "S.1.5"
+agent: "prototype-agent"
+optional: true
+---
+
+# /v.prototype
+
+> **Optional** step tại S.1.5 — sau Specify (S.1), trước Plan (B.0).
+> Hai chế độ: **Reproduce (`--from-mockup`)** — dựng render chốt (`ui/approved/`) từ mockup đã ingest qua DESIGN.md; **Explore (`--ui`/`--logic`)** — prototype throwaway khi spec còn câu hỏi chưa trả lời được bằng văn bản.
+> **Không block pipeline** — user có thể skip và tiếp tục `/v.plan` bình thường.
+
+## Điều kiện tiên quyết
+
+- `spec.md` phải tồn tại (không cần Approved — Draft cũng chạy được)
+- Câu hỏi cần trả lời được xác định (từ spec hoặc user chỉ định qua `--question`)
+
+## Options
+
+### `--logic`
+Ép buộc LOGIC branch (terminal TUI). Bỏ qua branch selection tự động.
+
+### `--ui`
+Ép buộc UI branch (multi-variant HTML/CSS prototype — mode **Explore**). Bỏ qua branch selection tự động.
+
+### `--from-mockup`
+**UI branch — mode Reproduce.** Dùng khi UC có mockup định hướng. Agent tự lấy ảnh từ **con trỏ `Mockup nguồn`** (spec UI Intent §2) hoặc `ui/mockups/` (do human đặt) — đọc/trích ảnh **tại bước này** (render được human duyệt). Link Figma → đọc qua **Figma MCP** (`get_design_context`/`get_screenshot`); không có MCP → export PNG/SVG vào `ui/mockups/`. Thay vì sinh nhiều variant, agent dựng **1 render trung thực** qua `DESIGN.md` và lưu `ui/approved/UC-NN.*` làm **visual contract** (không throwaway). Cấu trúc bám mockup, style từ design system (không copy pixel).
+Thường kèm `--req REQ-xxx` (hoặc `--question`) để xác định UC/màn hình. Kết hợp `--framework` nếu muốn render bằng framework dự án.
+
+### `--framework <name>`
+**Chỉ áp dụng cho UI branch.** Thường dùng kèm với `--ui`.
+Nếu không có flag này: generate **HTML + CSS thuần** (mặc định, không cần setup, mở ngay trên trình duyệt).
+
+Framework hỗ trợ:
+- `--framework react` → TSX + CSS Module
+- `--framework vue` → Vue SFC (`.vue`)
+- `--framework angular` → Angular Component
+- `--framework next` → Next.js page component
+
+### `--question "..."`
+Chỉ định câu hỏi cụ thể cần prototype trả lời.
+Nếu không có, agent tự detect từ ambiguity markers trong `spec.md`.
+
+### `--req <REQ-ID>`
+Chỉ định trực tiếp requirement cần prototype trả lời (ví dụ: `--req REQ-E03`).
+Agent sẽ đọc REQ đó trong `spec.md`, extract câu hỏi, và tự xác định branch phù hợp.
+
+**Ưu tiên**: `--req` > `--question` > auto-detect từ spec.
+
+> **Lưu ý**: Nếu REQ chỉ định không có ambiguity markers, agent sẽ confirm với user trước khi tiến hành.
+
+### `--subshape <A|B>`
+**Chỉ áp dụng cho UI branch.**
+- `A` — Embed variants vào existing page (preferred, mặc định)
+- `B` — Tạo throwaway route mới (last resort)
+
+Nếu không có flag này: agent tự hỏi user hoặc default theo `config.json`.
+
+## Ví dụ
+
+```
+/v.prototype
+/v.prototype --req REQ-S02
+/v.prototype --req REQ-E03 --logic
+/v.prototype --from-mockup --req REQ-U05
+/v.prototype --from-mockup --req REQ-U05 --framework react
+/v.prototype --ui --question "Dashboard layout nên dùng sidebar hay top nav?"
+/v.prototype --ui --subshape A --framework react --req REQ-U05
+/v.prototype --ui --framework react --question "Dashboard layout nên dùng sidebar hay top nav?"
+/v.prototype --logic --question "State machine xử lý concurrent upload có đúng không?"
+/v.prototype --logic
+```
+
+## Routing Rules — Sau khi có verdict
+
+```
+VALIDATED
+  → Ghi verdict vào .v-flow/features/NNN/prototype-notes.md
+  → [mode=from-mockup] Lưu render chốt vào ui/approved/UC-NN.* + cập nhật spec UI Intent "Render đã chốt"
+  → Append execution trace vào _session.md
+  → Update .flow-state.yaml (artifacts.prototype.verdict = VALIDATED, mode, approved_ref)
+  → ✅ Suggest: /v.plan + /v.test (chạy song song)
+
+REJECTED
+  → Ghi verdict + lý do + spec impact vào prototype-notes.md
+  → ⚠️  Alert: "Spec cần được cập nhật trước khi plan"
+  → Route: /v.specify (update spec với findings từ prototype)
+  → Update .flow-state.yaml (artifacts.prototype.verdict = REJECTED)
+
+INCONCLUSIVE
+  → Ghi open questions vào prototype-notes.md
+  → 🔔 Notify: "Cần thêm input từ stakeholder để kết luận"
+  → Pipeline tạm dừng — user quyết định: iterate prototype hay tiếp tục với assumptions
+  → Update .flow-state.yaml (artifacts.prototype.verdict = INCONCLUSIVE)
+
+Skip prototype (user bỏ qua hoàn toàn)
+  → Pipeline tiếp tục bình thường
+  → Update .flow-state.yaml (artifacts.prototype.skipped = true)
+  → Suggest: /v.plan + /v.test
+```
+
+## Output
+
+```
+.v-flow/features/NNN/
+├── prototype-notes.md    ← verdict + findings
+├── ui/approved/          ← [mode=from-mockup] render đã chốt — GIỮ làm contract
+│   └── UC-NN.[html|tsx|...]
+└── prototype/            ← [explore] throwaway code (xóa sau khi có verdict)
+    ├── [logic.ts | VariantA.tsx | ...]
+    └── README.md
+```
+
+## Read next
+
+- `agents/prototype-agent.md` — chi tiết workflow của agent
+- `skills/prototype/SKILL.md` — branch selection + V Flow integration
+- `skills/prototype/LOGIC.md` — terminal TUI branch
+- `skills/prototype/UI.md` — multi-variant UI branch
+- `.v-flow/templates/prototype-notes-template.md` — output format chuẩn

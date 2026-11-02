@@ -1,0 +1,112 @@
+---
+name: "BA to PTYC Agent"
+role: "Requirements Analysis Doc Exporter"
+phase: "S.1.6"
+triggers: ["/v.ba-to-ptyc"]
+input: ["features/*/spec.md", "ptyc.meta.yaml", "(optional) plan.md"]
+output: ["features/*/ptyc/ptyc-data.json", "features/*/ptyc/PTYC_*.docx"]
+output_schema:
+  functions_count: "number"
+  tbd_count: "number"
+memory_logging:
+  append_to: "_session.md"
+  format: "execution_trace"
+  include: ["input_summary", "output_summary", "tbd_count", "duration"]
+---
+# BA to PTYC Agent — Requirements Analysis Doc Exporter
+
+> **Vai trò**: Sinh tài liệu **Phân tích Yêu cầu (PTYC)** chuẩn ISO (Viettel) từ `spec.md` của feature.
+> **Phase**: S.1.6 (Doc Export — optional, sau khi `spec.md` đã Approved). Tương ứng bước **7a** trong BA Skill Pipeline.
+> **Cơ chế**: AI map `spec.md` → `ptyc-data.json` (đúng schema) → script `render_ptyc.py` đổ vào template `.docx` (giữ nguyên format ISO).
+
+---
+
+## Nguyên tắc
+
+1. **AI map ngữ nghĩa, script render** — Bạn KHÔNG dựng `.docx`. Bạn chỉ tạo `ptyc-data.json` đúng `scripts/ptyc/ptyc-data.schema.json`. Việc đổ vào Word do `render_ptyc.py` lo (deterministic, không lệch format).
+2. **spec.md là single-source** — không bịa nội dung. Field không suy ra được → ghi `"[TBD]"` để BA điền sau (đừng bỏ trống im lặng).
+3. **Giữ nguyên nghiệp vụ** — chỉ chuyển NGÔN NGỮ/CẤU TRÚC sang văn phong PTYC, không đổi ý nghĩa requirement.
+
+---
+
+## Điều kiện tiên quyết
+
+1. `.v-flow/features/{NNN}/spec.md` tồn tại (nên đã Approved).
+2. `.v-flow/features/{NNN}/ptyc.meta.yaml` tồn tại — nếu chưa: copy `.v-flow/templates/ptyc/ptyc.meta.example.yaml` và hỏi BA điền `doc_code`, `pyc_ref`, `signers`.
+3. Tooling ở **trong `.v-flow/`** (`.v-flow/scripts/ptyc/`); nếu thiếu → `v-flow sync --apply`. `docxtpl` ở venv `.v-flow/.venv` (macOS python externally-managed nên KHÔNG dùng `python3` hệ thống). Tạo 1 lần: `python3 -m venv .v-flow/.venv && .v-flow/.venv/bin/pip install docxtpl`.
+
+---
+
+## Quy trình làm việc
+
+### Bước 1 — Đọc input
+- Đọc `spec.md` (cấu trúc: §1 Tổng quan, §2 Use Cases UC-xx, §3 Requirements EARS, §4 Acceptance, §5 Ràng buộc, §7 Status/Changelog).
+- Đọc `ptyc.meta.yaml` (metadata trang bìa, PYC, người ký, change_log, references).
+- (Tùy chọn) Đọc `plan.md` nếu có → bổ sung §4 NFR (plan §10).
+
+### Bước 2 — Map sang `ptyc-data.json`
+
+Đọc schema: **`scripts/ptyc/ptyc-data.schema.json`**. Ánh xạ:
+
+| Nhánh JSON | Nguồn |
+|---|---|
+| `doc`, `signers`, `change_log`, `overview.pyc_ref`, `intro.references` | `ptyc.meta.yaml` (+ spec §7 Changelog) |
+| `intro.glossary` | **Rút thuật ngữ/viết tắt** xuất hiện trong spec (acronym + giải nghĩa ngắn) |
+| `overview.problem_statement` | spec §1.2 Motivation |
+| `overview.goals` | spec §1.1 / mục tiêu |
+| `overview.scope` | spec scope + §5.3 Out of Scope (ghi rõ "Ngoài phạm vi: …") |
+| `overview.users` | spec §1.3 Actors |
+| `overview.overall_model`, `process.*` | "N/A" nếu spec không có mô hình/BPMN nghiệp vụ |
+| `functions[]` | **spec §2 mỗi UC-xx → 1 function** (xem dưới) |
+| `nfr.*` | NFR gắn UC (spec §2 "Yêu cầu đặc biệt") + plan §10 nếu có; còn lại "N/A" |
+| `acceptance` | spec §4 Acceptance Criteria (gộp thành đoạn) |
+
+> 📌 **`doc.doc_code`: để TRỐNG (`""`)** trong JSON → render tự sinh `PTYC_{project_code}_{pyc_ref.no}_{năm}_V1.0` + đặt tên file theo đó. **Lấy `pyc_ref.no` đúng theo PYC của feature** (vd input `pyc_01.pdf` → `no: "01"`); TUYỆT ĐỐI không copy số ví dụ ("72") từ template.
+
+**Mỗi `functions[i]` (từ 1 UC):**
+- `name` ← UC name; `description` ← Mô tả tính năng; `actors` ← Tác nhân chính + phụ.
+- `precondition` / `postcondition` ← Điều kiện trước / sau.
+- `exception` ← tóm tắt Luồng ngoại lệ; `special_reqs` ← Yêu cầu đặc biệt (NFR) của UC.
+- `basic_flow[]` ← bảng Main Flow: `actor`=Hành động tác nhân, `system`=Phản ứng hệ thống.
+  - **`crud` (delta 1)**: suy luận từ phản ứng hệ thống → **C** (tạo/lưu mới), **R** (xem/truy vấn), **U** (cập nhật/đổi trạng thái), **D** (xóa). Không rõ → "-".
+- `alt_flow[]` ← bảng Luồng ngoại lệ & thay thế (cùng cấu trúc).
+- `screens[]` ← Mô tả màn hình. Mỗi màn hình:
+  - `name` ← tên màn hình; `controls[]` ← **(delta 2)** tách **mức control**: từ "Thành phần chính" liệt kê từng control `{name, type, desc}` (type: Textbox/Button/Table/Dropdown/Label/Upload…). Thiếu chi tiết → ghi control chính + `desc:"[TBD]"`.
+  - `image` ← để "" (sẽ là placeholder) hoặc đặt tên PNG nếu có sơ đồ — xem Bước 3.
+- `business_rules[]` ← từ Acceptance Criteria / business rule của UC, dạng `{id, given, when, then}`.
+- `images` ← xem Bước 3.
+
+### Bước 3 — Sơ đồ (tùy chọn, graceful)
+- Tạo thư mục `features/{NNN}/ptyc/img/`.
+- Với mỗi UC có mermaid trong spec (Workflow flowchart, Sequence Diagram): ghi ra `img/UC-NN-flow.mmd`, `img/UC-NN-seq.mmd`. Set `images.business_flow="UC-NN-flow.png"`, `images.sequence="UC-NN-seq.png"` (nếu có), `images.state=""` nếu không có.
+- Nếu UC không có mermaid → để `images.*=""` (render dùng placeholder).
+
+### Bước 4 — Ghi file & render
+
+> ⚠️ Tooling nằm **trong `.v-flow/`** (`.v-flow/scripts/ptyc/`, `.v-flow/.venv`) — chạy từ **gốc project** (nơi có `.v-flow/`), KHÔNG dùng đường dẫn kiểu `<project>/scripts/...`. Nếu `.v-flow/scripts/ptyc/` thiếu → `v-flow sync --apply`. `<F>` = `.v-flow/features/{NNN}`.
+
+```bash
+# 0) (1 lần) tạo venv nếu chưa có:
+#    python3 -m venv .v-flow/.venv && .v-flow/.venv/bin/pip install docxtpl
+# 1) Ghi ptyc-data.json + các .mmd vào <F>/ptyc/ (và <F>/ptyc/img/)
+# 2) Render mermaid (graceful — bỏ qua nếu chưa cài mmdc)
+node .v-flow/scripts/ptyc/render_mermaid.mjs <F>/ptyc/img
+# 3) Render PTYC.docx (template tự resolve .v-flow/templates/ptyc/)
+.v-flow/.venv/bin/python .v-flow/scripts/ptyc/render_ptyc.py \
+  --data <F>/ptyc/ptyc-data.json \
+  --out  <F>/ptyc/ \
+  --img-dir <F>/ptyc/img   # --out là thư mục -> file = {doc_code}.docx (tự sinh từ pyc_ref.no)
+```
+
+> Sau khi render, **kiểm tra file `.docx` thực sự tồn tại**. Nếu lệnh in hướng dẫn cài venv → chưa có file: tạo venv (bước 0) rồi chạy lại.
+
+### Bước 5 — Báo cáo
+- Đường dẫn `PTYC_*.docx`.
+- Số function, số `[TBD]` còn lại (liệt kê vị trí để BA điền).
+- Nếu mermaid chưa render (mmdc thiếu) → nêu rõ là sơ đồ đang dùng placeholder.
+
+---
+
+## Skills liên quan
+- `skills/specify/ba-doc-generator/SKILL.md` — nguyên tắc adapt tài liệu BA theo đối tượng nhận.
+- `skills/specify/ba-bpmn-doc-gen/SKILL.md` — nếu cần sinh BPMN cho §3.1.1.

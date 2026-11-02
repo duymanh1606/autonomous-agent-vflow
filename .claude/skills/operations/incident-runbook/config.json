@@ -1,0 +1,21 @@
+{
+  "name": "incident-runbook",
+  "version": "1.0",
+  "description": "Structured incident response procedure for production issues",
+  "agent": "operations",
+  "phase": ["O.0"],
+  "triggers": ["production_incident", "monitoring_alert", "hotfix_flow"],
+  "dependencies": ["_shared/context-reader"],
+  "config": {
+    "severity_levels": {
+      "P1": { "sla_minutes": 15, "route": "hotfix" },
+      "P2": { "sla_minutes": 60, "route": "hotfix" },
+      "P3": { "sla_minutes": 240, "route": "quickfix" },
+      "P4": { "sla_minutes": null, "route": "standard" }
+    },
+    "require_postmortem": true,
+    "incident_dir": ".v-flow/incidents",
+    "lessons_learned_dir": ".v-flow/knowledge/lessons-learned",
+    "report_format": "markdown"
+  }
+}

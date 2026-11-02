@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "hooks": {
+    "postToolUse": [
+      {
+        "command": "v-flow log --hook cursor --event postToolUse"
+      }
+    ],
+    "stop": [
+      {
+        "command": "v-flow log --hook cursor --event stop"
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "v-flow log --hook cursor --event sessionStart"
+      }
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "setup_questions": [
+    {
+      "id": "min_issues",
+      "question": "Số issues tối thiểu phải tìm mỗi round?",
+      "type": "number",
+      "default": 3
+    },
+    {
+      "id": "focus_areas",
+      "question": "Focus areas ưu tiên?",
+      "options": ["all", "security-first", "performance-first", "ux-first"],
+      "default": "all",
+      "description": "all = các chiều review đều nhau. security-first/performance-first/ux-first = ưu tiên chiều đó."
+    },
+    {
+      "id": "max_rounds",
+      "question": "Số round tối đa trước khi escalate cho human?",
+      "type": "number",
+      "default": 4
+    }
+  ],
+  "hooks": {
+    "pre_review": "Load spec.md mới nhất + constitution.md + context.md (nếu legacy)",
+    "post_review": "Verify ≥min_issues issues, append vào spec-review-log.md"
+  },
+  "memory": {
+    "file": "critic-history.log",
+    "format": "[date] | [feature] | [round] | [issues_found] | [critical] | [major] | [minor] | [verdict]",
+    "purpose": "Track critic quality — dùng cho /v.metrics để đánh giá spec quality"
+  }
+}

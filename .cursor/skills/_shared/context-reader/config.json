@@ -1,0 +1,54 @@
+{
+  "name": "context-reader",
+  "version": "1.0",
+  "description": "Load context.md cho legacy projects, extract No-Go Zones, Technical Debt, architecture thực tế",
+  "agent": "_shared",
+  "phase": ["All"],
+  "triggers": ["session_start"],
+  "dependencies": [],
+  "config": {
+    "context_path": ".v-flow/context.md",
+    "fallback_behavior": "skip_greenfield",
+    "staleness_thresholds": {
+      "fresh_days": 7,
+      "aging_days": 30
+    },
+    "critical_fields": ["no_go_zones", "tech_stack", "architecture"],
+    "trust_levels": {
+      "verified": "no_marker",
+      "inferred": "[⚠️ AI-inferred]",
+      "unverified": "[❓ CẦN VERIFY]"
+    }
+  },
+  "setup_questions": [
+    {
+      "id": "staleness_action",
+      "question": "Khi context.md quá cũ (>30 ngày)?",
+      "options": ["warn", "block", "auto-refresh"],
+      "default": "warn",
+      "description": "warn = hiện warning. block = DỪNG pipeline. auto-refresh = suggest /v.understand --refresh."
+    },
+    {
+      "id": "nogo_enforcement",
+      "question": "Mức độ enforce No-Go Zones?",
+      "options": ["strict", "warn", "log"],
+      "default": "strict",
+      "description": "strict = BLOCK ngay khi đụng. warn = cảnh báo nhưng cho tiếp. log = chỉ ghi log."
+    },
+    {
+      "id": "cross_reference_constitution",
+      "question": "Có cross-reference context.md với constitution.md không?",
+      "type": "boolean",
+      "default": true
+    }
+  ],
+  "hooks": {
+    "pre_read": "Check context.md tồn tại → nếu không → skip (greenfield project)",
+    "post_read": "Check staleness → warn nếu stale. Cross-reference No-Go Zones với constitution §7."
+  },
+  "memory": {
+    "file": "context-reads.log",
+    "format": "[date] | [agent] | [phase] | [staleness_status] | [nogo_zones_count] | [warnings]",
+    "purpose": "Track context awareness — dùng cho /v.understand --check"
+  }
+}

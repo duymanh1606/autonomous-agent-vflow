@@ -1,0 +1,74 @@
+---
+globs: *
+description: "Help Agent — Hướng dẫn bước tiếp theo dựa trên trạng thái dự án hiện tại"
+phase: "Any"
+agent: "help-agent"
+---
+
+# /v.help
+
+> Orchestration wrapper cho **Help Agent**. Đọc `agents/help-agent.md` để thực hiện core logic.
+
+## Điều kiện tiên quyết
+- Không có điều kiện đặc biệt — lệnh này luôn chạy được
+
+## Execution
+1. Đọc agent definition: `agents/help-agent.md`
+2. Thực hiện quy trình: quét trạng thái → đề xuất bước tiếp theo
+
+## Options
+
+### (không có argument) — Trạng thái tổng quan
+Quét toàn bộ dự án, hiển thị foundation status + tất cả features.
+
+### feature [name] — Trạng thái 1 feature
+```
+/v.help feature 002-dashboard
+```
+Chỉ quét và đề xuất cho feature cụ thể.
+
+### [câu hỏi tự do] — Hỏi kèm context
+```
+/v.help Tôi vừa sửa spec, bước tiếp theo là gì?
+```
+Help Agent phân tích câu hỏi kèm trạng thái hiện tại.
+
+---
+
+## 🔀 Routing Rules (cho Help Agent tham khảo)
+
+| Tình huống | Gợi ý |
+|-----------|-------|
+| Chưa init V Flow | `v-flow init` |
+| Chưa có `context.md` (dự án cũ) | `/v.understand --all` |
+| Có `context.md` chưa có module cards | `/v.understand --module {tên}` |
+| BA có tài liệu trên NotebookLM | `/v.import-ba-docs --notebook <id>` |
+| Chưa có `constitution.md` | `v-flow init` → `/v.constitute` |
+| Có `constitution.md` v1 (template trống) | `/v.constitute` |
+| Chưa có feature nào | `v-flow feature create <name>` |
+| Spec chưa viết | `/v.specify` |
+| Spec = Draft | ⏳ Human review & approve |
+| Spec approved, có ambiguity trong spec | `/v.prototype` (optional S.1.5) |
+| Spec approved (sau prototype hoặc không có ambiguity) | `/v.plan` + `/v.test` (song song) |
+| Spec approved, cần bàn giao tài liệu PTYC (Phân tích Yêu cầu) | `/v.ba-to-ptyc` (optional, Doc Export S.1.6) |
+| S.1.5 — prototype VALIDATED | `/v.plan` + `/v.test` |
+| S.1.5 — prototype REJECTED | `/v.specify` (sửa spec) |
+| S.1.5 — prototype INCONCLUSIVE | Chờ stakeholder input |
+| Artifact out-of-sync (❌ trong Status block) | `/v.sync` TRƯỚC |
+| Validation = FAIL | Đọc `fail_reason` → route tương ứng |
+| Validation = PASS/CONCERNS | `/v.implement` |
+| Multi-feature, cần sprint | `/v.sprint` |
+| Tất cả tasks `[x]` | `/v.review` |
+| Review = CHANGES_REQUIRED | Fix → `/v.review` lại |
+| Review = APPROVED | 🚀 Deploy → `/v.retrospective` → `/v.metrics` |
+
+---
+
+## Ví dụ
+
+```
+/v.help
+/v.help feature 002-dashboard
+/v.help Tôi vừa sửa spec, bước tiếp theo là gì?
+/v.help Dự án mới, chưa biết bắt đầu từ đâu
+```

@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "hooks": {
+    "postToolUse": [
+      {
+        "type": "command",
+        "bash": "v-flow log --hook copilot --event postToolUse"
+      }
+    ],
+    "agentStop": [
+      {
+        "type": "command",
+        "bash": "v-flow log --hook copilot --event agentStop"
+      }
+    ],
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "v-flow log --hook copilot --event sessionStart"
+      }
+    ]
+  }
+}

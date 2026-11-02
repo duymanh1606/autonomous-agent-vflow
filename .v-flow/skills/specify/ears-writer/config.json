@@ -1,0 +1,20 @@
+{
+  "setup_questions": [
+    {
+      "id": "language",
+      "question": "Requirements viết bằng ngôn ngữ nào?",
+      "options": ["vi", "en", "mixed"],
+      "default": "vi"
+    },
+    {
+      "id": "id_style",
+      "question": "REQ ID style?",
+      "options": ["ears-prefixed", "sequential"],
+      "default": "ears-prefixed",
+      "description": "ears-prefixed = REQ-U01, REQ-E01. sequential = REQ-001, REQ-002."
+    }
+  ],
+  "hooks": {
+    "post_spec": "Scan spec.md → kiểm tra từ cấm, EARS compliance, ID uniqueness"
+  }
+}

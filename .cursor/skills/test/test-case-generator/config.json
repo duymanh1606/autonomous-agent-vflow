@@ -1,0 +1,33 @@
+{
+  "setup_questions": [
+    {
+      "id": "coverage_target",
+      "question": "REQ coverage target (%)?",
+      "type": "number",
+      "default": 100,
+      "description": "Phần trăm REQs phải có test case. 100% recommended."
+    },
+    {
+      "id": "tc_format",
+      "question": "Test case format?",
+      "options": ["structured", "gherkin", "tabular"],
+      "default": "structured",
+      "description": "structured = markdown template. gherkin = Given-When-Then. tabular = table format."
+    },
+    {
+      "id": "edge_case_min",
+      "question": "Số edge case tối thiểu per REQ?",
+      "type": "number",
+      "default": 1
+    }
+  ],
+  "hooks": {
+    "pre_generate": "Load spec.md → extract REQ list + AC list → tạo coverage matrix skeleton",
+    "post_generate": "Verify coverage matrix 100%, mỗi AC có TC, edge cases ≥ min per REQ"
+  },
+  "memory": {
+    "file": "test-gen-history.log",
+    "format": "[date] | [feature] | [total_reqs] | [total_tcs] | [coverage_pct] | [edge_cases]",
+    "purpose": "Track test coverage patterns — dùng cho /v.metrics"
+  }
+}

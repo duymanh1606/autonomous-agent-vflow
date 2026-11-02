@@ -1,0 +1,55 @@
+{
+  "name": "ears-notation",
+  "version": "1.0",
+  "description": "EARS notation reference — Ubiquitous, Event-driven, State-driven, Optional patterns",
+  "agent": "_shared",
+  "phase": ["S.1"],
+  "triggers": ["spec_creation", "spec_review"],
+  "dependencies": [],
+  "config": {
+    "notation_types": ["Ubiquitous", "Event-driven", "State-driven", "Optional", "Unwanted"],
+    "prefix_mapping": {
+      "Ubiquitous": "REQ-U",
+      "Event-driven": "REQ-E",
+      "State-driven": "REQ-S",
+      "Optional": "REQ-O",
+      "Unwanted": "REQ-W"
+    },
+    "validation_rules": {
+      "min_requirements": 3,
+      "require_acceptance_criteria": true,
+      "max_ambiguous_words": 0
+    }
+  },
+  "setup_questions": [
+    {
+      "id": "strict_mode",
+      "question": "Bắt buộc tất cả requirements phải theo EARS format?",
+      "type": "boolean",
+      "default": true,
+      "description": "true = reject requirements không theo EARS. false = warn nhưng cho phép."
+    },
+    {
+      "id": "ambiguous_words",
+      "question": "Danh sách từ mơ hồ cần detect?",
+      "type": "string_array",
+      "default": ["nên", "hợp lý", "dễ dùng", "nhanh", "tối ưu", "user-friendly", "appropriate", "reasonable"],
+      "description": "Từ mơ hồ → trigger warning khi xuất hiện trong requirement."
+    },
+    {
+      "id": "require_nfr",
+      "question": "Bắt buộc có Non-Functional Requirements?",
+      "type": "boolean",
+      "default": true
+    }
+  ],
+  "hooks": {
+    "pre_write": "Load EARS notation reference → validate hiểu đúng format trước khi viết spec",
+    "post_write": "Scan spec.md → detect ambiguous words, verify mỗi REQ có AC"
+  },
+  "memory": {
+    "file": "ears-quality.log",
+    "format": "[date] | [feature] | [total_reqs] | [U_count] | [E_count] | [S_count] | [O_count] | [ambiguous_count]",
+    "purpose": "Track EARS adoption quality — identify patterns in requirement types"
+  }
+}
