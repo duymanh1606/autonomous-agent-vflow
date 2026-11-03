@@ -5,7 +5,7 @@
 >
 > - **Bên V-Flow**: `.v-flow/slices/SLICE-*.md` (24 slice, 78 WBS unit) — sinh từ
 >   `.v-flow/architecture/project_wbs.md` qua động cơ seam test + G1–G8.
-> - **Bên VSAF**: `../vsaf-ws/autonomous-agent-spec/NTAPP-output/Stage_2_Architecture/slices/`
+> - **Bên VSAF**: `../../vsaf-ws/autonomous-agent-spec/NTAPP-output/Stage_2_Architecture/slices/`
 >   (23 slice, 63 WBS unit) — cùng codebase, chạy qua pipeline Dual-Repo của NTAPP.
 
 ---
