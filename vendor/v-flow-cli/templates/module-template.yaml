@@ -1,0 +1,161 @@
+# Module Template — Subgraph Composition
+# Mỗi module = 1 reusable subgraph trong V Flow pipeline.
+# Lấy cảm hứng từ LangGraph Subgraphs — encapsulated workflows có input/output rõ ràng.
+#
+# Module che giấu internal complexity — parent pipeline chỉ cần biết input/output.
+
+# ─ Cách dùng ─────────────────────────────────────────────────────
+# 1. Tạo file module definition: .v-flow/modules/[name].yaml
+# 2. Dùng module trong pipeline: /v.plan --module security
+# 3. Compose nhiều modules: /v.plan --modules "security,ux,api"
+# ─────────────────────────────────────────────────────────────────
+
+# ═══════════════════════════════════════════════════════════════
+# Module: Build (B.0)
+# ═══════════════════════════════════════════════════════════════
+module_build:
+  name: "build"
+  description: "Plan + Test + Optional Agents chạy song song"
+  phase: "B.0"
+
+  input_required:
+    - "spec.md (approved)"
+    - "constitution.md"
+    - "context.md (nếu legacy)"
+
+  output_produces:
+    - "plan.md"
+    - "tasks.md"
+    - "test-cases.md"
+    - "security-review.md (optional)"
+    - "ux-checklist.md (optional)"
+
+  composed_of:
+    - command: "/v.plan"
+      parallel: true
+      required: true
+    - command: "/v.test"
+      parallel: true
+      required: true
+    - command: "/v-flow.security"
+      parallel: true
+      required: false
+      trigger_keywords: ["auth", "login", "payment", "JWT", "API key"]
+
+  exit_condition:
+    all_required_complete: true
+    output_synced_to_spec: true
+
+  next_module: "review"
+
+# ═══════════════════════════════════════════════════════════════
+# Module: Review (R.0 + R.1)
+# ═══════════════════════════════════════════════════════════════
+module_review:
+  name: "review"
+  description: "Master Check → Gate → Code Review"
+  phase: "R.0 → R.1"
+
+  input_required:
+    - "plan.md"
+    - "tasks.md"
+    - "test-cases.md"
+    - "spec.md"
+
+  output_produces:
+    - "validation-report.md"
+
+  composed_of:
+    - command: "/v.check"
+      required: true
+    - command: "human_gate"   # pause for human approval
+      required: true
+
+  routing:
+    PASS: "implement_module"
+    PASS_WITH_CONCERNS: "implement_module"
+    FAIL: 
+      spec_gap: "specify_module"
+      plan_gap: "build_module"
+      test_gap: "build_module"
+
+  next_module: "implement"
+
+# ═══════════════════════════════════════════════════════════════
+# Module: Implement (B.1)
+# ═══════════════════════════════════════════════════════════════
+module_implement:
+  name: "implement"
+  description: "TDD implementation + Code Review"
+  phase: "B.1 → R.1"
+
+  input_required:
+    - "plan.md"
+    - "tasks.md"
+    - "test-cases.md"
+    - "validation-report.md (PASS or PASS_WITH_CONCERNS)"
+
+  output_produces:
+    - "source code"
+    - "test files"
+    - "updated tasks.md [x]"
+
+  composed_of:
+    - command: "/v.implement"
+      required: true
+    - command: "/v.review"
+      required: true
+
+  routing:
+    APPROVED: "metrics_module"
+    CHANGES_REQUIRED: "self"   # loop back — fix and re-review
+
+  next_module: "metrics"
+
+# ═══════════════════════════════════════════════════════════════
+# Module: Quick Fix (Prebuilt Composed Subgraph)
+# ═══════════════════════════════════════════════════════════════
+module_quickfix:
+  name: "quickfix"
+  description: "Mini Spec → Implement → Quick Review (skip full pipeline)"
+  phase: "S.1 → B.1 → R.1"
+
+  input_required:
+    - "bug description / change request"
+    - "constitution.md"
+
+  output_produces:
+    - "mini spec.md"
+    - "code fix"
+    - "review report"
+
+  composed_of:
+    - command: "/v.quickfix"   # uses internal phases
+      required: true
+
+  exit_condition:
+    review_verdict: ["APPROVED", "APPROVED_WITH_NOTES"]
+
+# ═══════════════════════════════════════════════════════════════
+# Full Pipeline Composition
+# ═══════════════════════════════════════════════════════════════
+pipeline_full:
+  name: "full_pipeline"
+  modules:
+    - "specify"     # S.1 → spec.md
+    - "build"       # B.0 → plan + tests + optional agents
+    - "review"      # R.0 → master check + gate
+    - "implement"   # B.1 + R.1 → code + review
+    - "metrics"     # M.0 → retrospective + metrics
+
+  # Prebuilt alternatives:
+  # quickfix_pipeline: ["quickfix"]
+  # hotfix_pipeline: ["hotfix"]
+
+pipeline_quickfix:
+  name: "quickfix_pipeline"
+  modules: ["quickfix"]
+
+pipeline_hotfix:
+  name: "hotfix_pipeline"
+  modules: ["hotfix"]

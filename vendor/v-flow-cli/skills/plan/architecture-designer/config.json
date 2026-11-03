@@ -1,0 +1,32 @@
+{
+  "setup_questions": [
+    {
+      "id": "architecture_style",
+      "question": "Architecture style ưu tiên?",
+      "options": ["clean-architecture", "mvc", "hexagonal", "layered", "auto-detect"],
+      "default": "auto-detect",
+      "description": "auto-detect = đọc constitution.md để xác định. Nếu không có → dùng layered."
+    },
+    {
+      "id": "diagram_format",
+      "question": "Component diagram format?",
+      "options": ["mermaid", "ascii", "none"],
+      "default": "mermaid"
+    },
+    {
+      "id": "include_security",
+      "question": "Luôn include security architecture section?",
+      "type": "boolean",
+      "default": true
+    }
+  ],
+  "hooks": {
+    "pre_design": "Extract No-Go Zones từ context.md, extract patterns từ constitution.md",
+    "post_design": "Verify: mỗi REQ có component, mỗi file path chính xác, No-Go Zone safe"
+  },
+  "memory": {
+    "file": "plan-history.log",
+    "format": "[date] | [feature] | [components_count] | [new_files] | [modified_files] | [nogo_checks_passed]",
+    "purpose": "Track design decisions — dùng cho /v.retrospective"
+  }
+}

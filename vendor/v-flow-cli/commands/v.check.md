@@ -1,0 +1,139 @@
+---
+description: "Master Check Agent — Cross-validate Spec ↔ Plan ↔ Tests trước khi implement"
+phase: "R.0"
+agent: "master-check-agent"
+routing_rules:
+  PASS: "implement"
+  PASS_WITH_CONCERNS: "implement"
+  FAIL_spec_gap: "re_specify"
+  FAIL_plan_gap: "re_plan"
+  FAIL_test_gap: "re_test"
+  FAIL_nogo_violation: "re_plan"
+  FAIL_constitution: "fix_artifact"
+---
+
+# /v.check
+
+> Orchestration wrapper cho **Master Check Agent**. Đọc `agents/master-check-agent.md` để thực hiện core logic.
+
+> ⚠️ KHÔNG có code nào được viết cho đến khi Master Check = **PASS** hoặc **PASS WITH CONCERNS**
+
+## Điều kiện tiên quyết
+- `spec.md` — kiểm tra Status block (Section 7): tất cả artifacts phải ✅
+- `plan.md` + `tasks.md` phải tồn tại
+- `test-cases.md` phải tồn tại
+- `constitution.md` phải tồn tại
+- `context.md` (nếu legacy project)
+
+## Execution
+1. Đọc agent definition: `agents/master-check-agent.md`
+2. Thực hiện toàn bộ quy trình trong agent definition
+3. Tạo `validation-report.md` theo output template
+
+### Slice plan (khi feature có `slicing.active_variant`)
+- Bước 0 `v-flow validate <feature> --strict` đã chạy luật slice R1–R11 theo profile `strict` (lỗi → FAIL, `fail_reason = "plan_gap"`; variant stale → chạy `v-flow slice impact` trước)
+- **Thêm một mục ngữ nghĩa**: với mỗi slice, câu `demo` có khớp với AC suy ra cho slice không (`v-flow slice show <feature>` → mục "Chi tiết"). Demo hứa hành vi không có AC nào phủ, hoặc AC của slice không được demo chạm tới → ghi concern
+
+### --slice SLICE-n — kiểm tra lại sau khi spec đổi
+- Chỉ kiểm tra trong phạm vi slice đã đánh dấu `needs_recheck` / `needs_regression` (do `v-flow slice impact`): task, AC, TC của slice đó và các slice hậu duệ
+- Qua → `v-flow slice mark <feature> SLICE-n recheck` (xoá cờ, slice được chạy tiếp). Slice ngoài vùng ảnh hưởng không bị chặn
+
+---
+
+## 🔀 Routing Rules — Sau Master Check
+
+> Điền `fail_reason` vào `validation-report.md` và `.flow-state.yaml` để agent/user biết đi đâu tiếp theo.
+
+```
+Verdict = PASS
+  → Route: /v.implement
+  → Không có vấn đề, sẵn sàng code
+
+Verdict = PASS_WITH_CONCERNS
+  → Route: /v.implement
+  → ⚠️ Implement Agent PHẢI đọc và xử lý từng concern trong list
+  → ⚠️ /v.review PHẢI verify concerns đã resolved
+
+Verdict = FAIL + fail_reason = "spec_gap"
+  → Route: /v.specify (sửa/bổ sung spec)
+  → Sau spec: bump version → /v.sync → /v.check
+
+Verdict = FAIL + fail_reason = "plan_gap"
+  → Route: /v.plan (re-design plan)
+  → Sau plan: /v.sync → /v.check
+
+Verdict = FAIL + fail_reason = "test_gap"
+  → Route: /v.test (bổ sung test cases)
+  → Sau test: /v.check
+
+Verdict = FAIL + fail_reason = "nogo_violation"
+  → Route: /v.plan (redesign tránh No-Go Zones)
+
+Verdict = FAIL + fail_reason = "constitution_violation"
+  → Route: Fix artifact vi phạm → /v.check
+```
+
+## Output — validation-report.md
+
+```markdown
+# Validation Report — [Feature Name]
+
+**Ngày check**: YYYY-MM-DD
+**Spec Version**: vX.Y
+**Verdict**: ✅ PASS / ⚠️ PASS WITH CONCERNS / ❌ FAIL
+
+## Tóm tắt Coverage
+
+| Metric | Kết quả |
+|--------|---------|
+| Tổng requirements | N |
+| REQ có task | N/N ✅ |
+| REQ có test case | N/N ✅ |
+| Orphan tasks | 0 ✅ |
+| Orphan tests | 0 ✅ |
+
+## Issues
+(Critical / Major / Concerns / Minor)
+
+## Kết luận
+> ✅ PASS — Sẵn sàng implement
+> ⚠️ PASS WITH CONCERNS — Xem danh sách Concerns ở trên
+> ❌ FAIL — Fix [N] Critical/Major issues trước khi implement
+```
+
+## Cập nhật State & Session
+
+**Cập nhật `.flow-state.yaml`**:
+```yaml
+artifacts:
+  validation_report:
+    exists: true
+    verdict: "PASS"
+    spec_version_checked: "v1.0"
+    concerns_count: 0
+    issues_critical: 0
+    issues_major: 0
+routing:
+  after_master_check:
+    last_verdict: "PASS"
+    last_fail_reason: null
+    route_decision: "implement"
+current_phase: "R.0"
+phase_status: "done"
+```
+
+**Append vào `_session.md`**:
+```markdown
+### [R.0] Master Check — [YYYY-MM-DD]
+- **Verdict**: [PASS | PASS_WITH_CONCERNS | FAIL]
+- **Issues**: [N] critical, [N] major, [N] concerns
+- **Routing**: [route_decision] — [lý do]
+```
+
+---
+
+## Ví dụ
+
+```
+/v.check Feature 001-user-login
+```

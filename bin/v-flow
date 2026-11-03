@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+if [ ! -d "$ROOT_DIR/vendor/v-flow-cli/node_modules" ]; then
+  echo "▶ Đang cài đặt thư viện phụ thuộc cho v-flow CLI..." >&2
+  (cd "$ROOT_DIR/vendor/v-flow-cli" && npm install --silent)
+fi
+
+exec node "$ROOT_DIR/vendor/v-flow-cli/cli/index.js" "$@"

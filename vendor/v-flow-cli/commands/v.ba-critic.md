@@ -1,0 +1,101 @@
+---
+description: "BA Critic Agent — Adversarial spec review 1 round (dùng sau /v.specify --dual)"
+phase: "S.1"
+agent: "ba-critic-agent"
+---
+
+# /v.ba-critic
+
+> Orchestration wrapper cho **BA Critic Agent**. Đọc `agents/ba-critic-agent.md` để thực hiện core logic.
+
+## Điều kiện sử dụng
+
+- Đã chạy `/v.specify --dual` → `spec.md` và `spec-review-log.md` đã tồn tại
+- Hoặc: BA Agent vừa cập nhật spec sau ITERATE và bạn muốn chạy round tiếp theo
+
+## Execution
+1. Đọc agent definition: `agents/ba-critic-agent.md`
+2. Thực hiện toàn bộ quy trình trong agent definition
+3. Ghi kết quả theo Output Template bên dưới
+
+---
+
+## 🔀 Routing Rules — Sau BA Critic
+
+```
+Verdict = CONVERGED (0 Critical + 0 Major)
+  → [Optional S.1.5] /v.prototype  ← nếu spec có ambiguity sau review
+  → Route: /v.plan + /v.test (SONG SONG)
+  → Spec đã hội tụ, sẵn sàng chuyển sang Build phase
+
+Verdict = ITERATE (≥ 1 Critical hoặc Major)
+  → Route: BA Agent sửa spec → /v.ba-critic (round tiếp)
+  → BA Agent đọc issues và bump spec version
+
+Verdict = ESCALATE (Round ≥ 4)
+  → Route: Human review
+  → Cần meeting với stakeholder
+```
+
+## Output Template — spec-review-log.md
+
+Append Round N vào `spec-review-log.md`:
+
+```markdown
+## Round [N] — [YYYY-MM-DD]
+
+**Spec Version đầu round**: v[X.Y]
+**Reviewer**: BA Critic Agent (fresh context)
+
+### Issues Found
+
+| ID | Mức | Mô tả ngắn | Requirement liên quan |
+|----|-----|------------|----------------------|
+| R[N]-C001 | 🔴 Critical | ... | REQ-xxx |
+
+### Thống kê Round [N]
+
+| Mức | Số lượng |
+|-----|---------|
+| 🔴 Critical | N |
+| 🟠 Major | N |
+| 🟡 Minor | N |
+
+### Verdict Round [N]
+> [CONVERGED / ITERATE / ESCALATE]
+```
+
+Cập nhật **Convergence Summary** ở cuối file.
+
+---
+
+## Input
+- `.v-flow/features/NNN-feature/spec.md`
+- `.v-flow/constitution.md`
+- `.v-flow/context.md` *(nếu legacy)*
+- `.v-flow/features/NNN-feature/spec-review-log.md` *(header only)*
+
+## Output
+- `.v-flow/features/NNN-feature/spec-review-log.md` *(append Round N)*
+
+## Ví dụ
+
+```
+/v.ba-critic
+```
+
+*(Không cần argument — tự động đọc feature folder hiện tại)*
+
+---
+
+## Cập nhật State & Session
+
+**Append vào `_session.md`**:
+```markdown
+### [S.1] BA Critic Round [N] — [YYYY-MM-DD]
+- **Agent**: BA Critic Agent
+- **Spec Version**: v[X.Y]
+- **Verdict**: [CONVERGED | ITERATE | ESCALATE]
+- **Issues**: [N] Critical, [N] Major, [N] Minor
+- **Routing**: → [next step]
+```

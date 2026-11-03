@@ -1,95 +1,89 @@
-# Autonomous Agent (V Flow)
+# Autonomous Agent (V Flow + VSAF Hybrid)
 
-Hệ thống Agent tự động hóa tương tác tin nhắn khách hàng đa nền tảng (TikTok Web), hỗ trợ giám sát thời gian thực qua Dashboard WebSocket và cơ chế chuyển giao người thật (Operator Takeover). Dự án được chuẩn hóa phát triển theo quy trình **V Flow** (Spec-Driven Development).
+Hệ thống Agent tự động hóa tương tác tin nhắn khách hàng đa nền tảng (TikTok Web), hỗ trợ giám sát thời gian thực qua Dashboard WebSocket và cơ chế chuyển giao người thật (Operator Takeover).
 
----
-
-## 🚀 Tính năng cốt lõi
-
-1. **Messaging Agent (`messaging-agent`)**:
-   - Tự động nhận diện và phản hồi tin nhắn khách hàng TikTok.
-   - Tự động xử lý tin nhắn ảnh/sticker không hỗ trợ và hỏi đáp giá/tồn kho.
-2. **TikTok Platform Adapter (`tiktok-platform`)**:
-   - Kết nối và duy trì phiên làm việc TikTok Web tự động, chống checkpoint/khóa tài khoản.
-3. **Operator Handoff (`handoff-escalation`)**:
-   - Cho phép nhân viên (Operator) tiếp quản cuộc hội thoại khi gặp ca phức tạp.
-   - Tự động tạm ngưng bot trong lúc nhân viên chat và hoàn trả quyền khi xong.
-4. **Silent Follow-up (Nudge Engine)**:
-   - Tự động gửi tin nhắn chăm sóc/nhắc nhở khách hàng im lặng sau thời gian cấu hình.
-5. **Dashboard & Supervisor (`dashboard-supervisor`)**:
-   - Giao diện giám sát đa tài khoản, bật/tắt/tạm dừng agent thời gian thực qua WebSocket.
-   - Quản lý đơn hàng và đồng bộ tự động về Google Sheet.
+Dự án áp dụng quy trình phát triển kết hợp **V Flow (Spec-Driven Single-Repo)** và **VSAF (Vertical Slicing / WBS as-built)** được đóng gói hoàn toàn khép kín (**Self-Contained Turnkey**) trong 1 repo duy nhất.
 
 ---
 
-## 📁 Cấu trúc quy trình V Flow (`.v-flow/`)
+## ⚡ Bắt đầu nhanh (Quickstart trong 1 bước)
 
-Dự án áp dụng mô hình **Spec-Driven Development** với các tài liệu đã được trích xuất và phân tích tự động:
+Sau khi clone repo về, bạn chỉ cần chạy **1 lệnh duy nhất** để thiết lập toàn bộ môi trường (CLI, AI Skills, Python venv):
 
-```text
-.v-flow/
-├── context.md              # Tổng quan kiến trúc & các vùng cấm chạm (No-go zones)
-├── constitution.md         # Quy chuẩn lập trình, format code và testing
-├── agent-config.md         # Cấu hình gán model cho 14 agent (Sonnet tier)
-├── modules/                # Thẻ nghiệp vụ (Module Cards) bóc tách từ code
-│   ├── messaging-agent/
-│   ├── tiktok-platform/
-│   ├── handoff-escalation/
-│   └── dashboard-supervisor/
-└── features/001-autonomous-agent-vflow/
-    ├── spec.md             # Đặc tả 15 yêu cầu kỹ thuật (REQ-01..15) & 14 AC chuẩn EARS
-    ├── plan.md & tasks.md  # Kế hoạch kỹ thuật và phân rã 16 tasks (T-001..T-016)
-    ├── test-cases.md       # 18 test cases (TC-01..TC-18) bao phủ 100% AC
-    ├── validation-report.md# Báo cáo Master Check (Verdict: PASS_WITH_CONCERNS, Quality 88%)
-    └── slices.md           # Kế hoạch 12 lát cắt dọc demo được (đã khóa 🔒)
+```bash
+git clone https://github.com/duymanh1606/autonomous-agent-vflow.git
+cd autonomous-agent-vflow
+
+# Cài đặt tự động toàn bộ môi trường và v-flow CLI
+./scripts/bootstrap.sh
 ```
 
 ---
 
-## 🗺️ Lộ trình triển khai lát cắt (Slice Roadmap)
+## 🚀 Khởi chạy Quy trình Phát triển
 
-Dự án được phân rã thành **12 lát cắt dọc (Vertical Slices)** theo chiến lược `main-first`:
+Dự án đã nhúng sẵn:
+- **`v-flow` CLI**: Tự động liên kết từ `vendor/v-flow-cli` (đã tích hợp module `import-vsaf`).
+- **AI Skills & Agents**: Đầy đủ trong `.claude/`, `.cursor/`, `.agents/` (bao gồm cả skill `NTAPP-slice-planning`).
 
-* **`SLICE-0`**: Nền tảng Database, schema migration, cô lập dữ liệu đa tài khoản.
-* **`SLICE-1` (Tracer Bullet)**: Tự động trả lời tin nhắn TikTok (luồng chính demo thông UI -> DB).
-* **`SLICE-2`**: Nhân viên tiếp quản (Operator takeover) và hoàn trả hội thoại.
-* **`SLICE-3`**: Tự động follow-up khách hàng im lặng.
-* **`SLICE-4`**: Bảng điều khiển vận hành tài khoản qua WebSocket Dashboard.
-* **`SLICE-5`**: Quản lý đơn hàng và đồng bộ Google Sheet.
-* **`SLICE-6`..`SLICE-11`**: Xử lý các luồng ngoại lệ (tin ảnh/sticker, tồn kho, phân quyền, lỗi webhook).
+### Cách 1: Chạy tự động trong AI Chat (Claude Code / Cursor / Antigravity) — *Khuyên dùng*
+Mở repo này trong công cụ AI của bạn và gõ:
+
+```text
+/v.code-to-vsaf-slice
+```
+*AI sẽ tự động thực thi tuần tự:*
+1. **Dò code (U.0)**: Quét codebase sinh `context.md`, `constitution.md`, `Module Cards`.
+2. **Tổng hợp WBS (U.1)**: Phân rã 78 Work Units as-built thành `.v-flow/architecture/project_wbs.md`.
+3. **Đặc tả & Lập kế hoạch (S.1 & B.0)**: Sinh `spec.md` EARS, `plan.md`, `tasks.md`, `test-cases.md`.
+4. **Chia lát cắt VSAF (B.0c)**: Gọi động cơ Seam Test + 8 Invariants chia thành 24 lát cắt dọc `SLICE-*.md`.
+5. **Kiểm định chéo (R.0)**: Master Check kiểm tra ma trận và xuất báo cáo nghiệm thu.
+
+### Cách 2: Chạy qua Terminal Script
+```bash
+./scripts/code-to-slice.sh
+```
 
 ---
 
-## 🛠️ Hướng dẫn sử dụng
+## 📁 Cấu trúc đóng gói khép kín trong Repo
 
-### 1. Điều khiển quy trình AI (V Flow)
-Trong cửa sổ chat (Claude CLI / Antigravity IDE):
-* **Chạy trọn gói từ dò code tới chia slice (1 lệnh duy nhất):**
-  ```text
-  /v.code-to-slice
-  ```
-  *(hoặc chạy script terminal: `./scripts/code-to-slice.sh`)*
-* **Bắt đầu viết code TDD theo từng slice:**
-  ```text
-  /v.implement
-  ```
-* **Kiểm định chất lượng chéo:**
-  ```text
-  /v.check
-  ```
+```text
+autonomous-agent-vflow/
+├── bin/
+│   └── v-flow                  # Executable wrapper tự động gọi CLI
+├── vendor/
+│   └── v-flow-cli/             # Lõi v-flow CLI kèm tính năng import-vsaf
+├── scripts/
+│   ├── bootstrap.sh            # Script cài đặt môi trường tự động
+│   └── code-to-slice.sh        # Script khởi chạy pipeline
+├── .bmm-config.yaml            # Cầu nối 3-layer cascade tích hợp VSAF vào Single-Repo
+├── .v-flow/
+│   ├── context.md              # Kiến trúc hệ thống & No-go zones
+│   ├── constitution.md         # Luật lập trình & testing
+│   ├── architecture/
+│   │   ├── project_wbs.md      # 78 Work Units as-built chuẩn VSAF
+│   │   ├── wbs-task-map.yaml   # Ánh xạ Work Unit ↔ Task
+│   │   └── vsaf-slice-comparison.md # Đối chiếu 24 slices với VSAF gốc
+│   ├── slices/                 # Bộ 24 slice manifest chuẩn VSAF (SLICE-1..24)
+│   └── modules/                # Thẻ nghiệp vụ (Module Cards)
+├── .claude/                    # Slash Commands, Agents & Skills (đã bao gồm NTAPP-slice-planning)
+├── agent/                      # Mã nguồn Python Core Agent
+├── core/                       # LangGraph State Machine
+├── dashboard_api/              # FastAPI Backend
+└── dashboard/                  # React Vite Frontend Dashboard
+```
 
-### 2. Chạy ứng dụng Python
+---
+
+## 🛠️ Vận hành Ứng dụng Sản phẩm
+
 ```bash
-# Cài đặt môi trường với uv
-uv sync
-
-# Cấu hình môi trường
-cp .env.example .env
-# Điền các API keys và thông tin cấu hình vào .env
-
-# Chạy ứng dụng
+# Khởi động Backend + Agent
 python main.py
 # Hoặc chạy script dev
 ./dev.sh
-```
 
+# Khởi động Frontend Dashboard
+cd dashboard && npm install && npm run dev
+```

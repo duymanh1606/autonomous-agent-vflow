@@ -1,0 +1,127 @@
+---
+description: "Rewind — Rollback spec/pipeline về version cũ (Time Travel)"
+phase: "Any"
+---
+
+# /v.rewind
+
+Rollback feature về trạng thái tại một spec version cũ, cho phép re-do pipeline từ phase đã chọn.
+
+> Lấy cảm hứng từ LangGraph Time Travel: **Replay** — revert về checkpoint cũ và re-execute.
+
+## Điều kiện tiên quyết
+- `.flow-state.yaml` phải tồn tại với `phase_history`
+- Feature phải có ít nhất 1 lần chuyển phase
+- KHÔNG đang ở R.1 (phải hoàn thành review trước)
+
+## Khi nào dùng
+
+- Spec version mới gây ra FAIL liên tục → quay lại version ổn định
+- Team muốn thử lại approach khác từ một phase cụ thể
+- Master Check FAIL → spec cần rollback vì hướng mới không khả thi
+- Implementation phát hiện spec mới không hợp lý
+
+> ❌ KHÔNG dùng cho production rollback — dùng `/v.hotfix`
+
+## Quy trình
+
+### Bước 1: Xác định target
+
+```
+/v.rewind [feature-id] --to [vX.Y]         ← rollback về spec version cụ thể
+/v.rewind [feature-id] --to-phase [phase]   ← rollback về phase cụ thể
+```
+
+### Bước 2: Kiểm tra spec snapshots
+
+Đọc `.flow-state.yaml` → `phase_history` để tìm snapshot tại target version:
+
+```yaml
+phase_history:
+  - phase: "S.1"
+    entered_at: "2026-04-01"
+    spec_version: "v1.0"
+  - phase: "B.0"
+    entered_at: "2026-04-02"
+    spec_version: "v1.0"
+  - phase: "R.0"
+    entered_at: "2026-04-03"  
+    spec_version: "v1.1"     
+    verdict: "FAIL"
+    fail_reason: "spec_gap"  # ← có thể muốn rewind về v1.0
+```
+
+### Bước 3: Thực hiện rewind
+
+```
+1. Lưu state hiện tại vào `_session.md` (trace entry):
+   ### [REWIND] — [YYYY-MM-DD]
+   - **Từ**: phase [current], spec [vX.Y]
+   - **Về**: phase [target], spec [vA.B]
+   - **Lý do**: [lý do rewind]
+
+2. Reset `.flow-state.yaml`:
+   - current_phase → target phase
+   - phase_status → "rewound"
+   - artifacts downstream → exists: false
+   - validation_report → null (nếu rewind trước R.0)
+   - active_concerns → clear (nếu rewind trước B.1)
+
+3. Archive artifacts downstream:
+   - Nếu rewind từ R.0 về B.0:
+     → Archive validation-report.md → _archive/validation-report.v1.1.md
+   - Nếu rewind từ B.1 về R.0:
+     → Archive code changes (git stash hoặc branch)
+   - Giữ nguyên artifacts upstream (spec, plan nếu không bị đổi)
+
+4. Báo cáo cho human:
+   "Feature [X] đã rollback về [phase] với spec [vA.B]
+    Bước tiếp theo: [command]
+    Artifacts đã archive: [list]"
+```
+
+### Bước 4: Update state
+
+```yaml
+# .flow-state.yaml sau rewind
+current_phase: "B.0"     # ← phase target
+phase_status: "rewound"  # ← marker đặc biệt
+
+phase_history:
+  # ... history cũ giữ nguyên ...
+  - phase: "REWIND"
+    entered_at: "2026-04-03"
+    from_phase: "R.0"
+    from_spec: "v1.1"
+    to_phase: "B.0"
+    to_spec: "v1.0"
+    reason: "Master Check FAIL — spec v1.1 không khả thi"
+
+rewind_count: 1  # ← tracking số lần rewind (> 2 = thận trọng)
+```
+
+## Routing sau Rewind
+
+```
+Rewind về S.1 → /v.specify (sửa spec)
+Rewind về B.0 → /v.plan + /v.test (re-plan)
+Rewind về R.0 → /v.check (re-check)
+Rewind về B.1 → tiếp tục implement từ task cuối
+```
+
+## Quy tắc
+
+- **Luôn archive** artifacts bị xóa — không bao giờ delete hoàn toàn
+- **Ghi trace** vào `_session.md` — mọi rewind phải có lý do
+- **Cảnh báo nếu rewind > 2 lần** — có thể spec chưa rõ, cần re-think approach
+- **Không rewind khi đang ở R.1** — hoàn thành review trước (policy: Reject)
+
+---
+
+## Ví dụ
+
+```
+/v.rewind 001-login --to v1.0
+/v.rewind 001-login --to-phase B.0
+/v.rewind 001-login --to v1.2 --reason "v1.3 quá phức tạp, quay lại approach cũ"
+```

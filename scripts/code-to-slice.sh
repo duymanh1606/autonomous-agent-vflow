@@ -8,10 +8,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_DIR"
 
+# Đảm bảo v-flow wrapper được ưu tiên trong PATH
+export PATH="$PROJECT_DIR/bin:$PATH"
+
 # Nếu người dùng không truyền tên, tự động lấy tên dự án hiện tại
 PROJECT_NAME="$(basename "$PROJECT_DIR")"
 FEATURE="${1:-$PROJECT_NAME}"
-VARIANT="${2:-main-first}"
+VARIANT="${2:-vsaf}"
 
 echo "=========================================================="
 echo "🚀 V FLOW — KHỞI CHẠY TRỌN GÓI: TỪ DÒ CODE TỚI CHIA SLICE"
@@ -33,6 +36,7 @@ fi
 
 # 3. Thông báo cho người dùng
 echo "▶ Trạng thái Feature: $FEATURE đã sẵn sàng."
-echo "▶ Để AI chạy tự động trọn gói từ dò code (U.0) -> Spec (S.1) -> Plan (B.0) -> Slice (B.0c):"
-echo "   👉 Gõ lệnh trong chat: /v.code-to-slice $FEATURE"
+echo "▶ Để AI chạy tự động trọn gói từ dò code (U.0) -> WBS (U.1) -> Spec -> Plan -> Slice VSAF (B.0c):"
+echo "   👉 Gõ lệnh trong chat: /v.code-to-vsaf-slice $FEATURE"
+echo "   (hoặc luồng gốc V-Flow: /v.code-to-slice $FEATURE)"
 echo "=========================================================="

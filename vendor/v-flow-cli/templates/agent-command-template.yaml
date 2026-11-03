@@ -1,0 +1,240 @@
+# Agent Command Output Schema
+
+# Mỗi Agent khi hoàn thành phase PHẢI xuất ra structured command block.
+# Block này nằm cuối output markdown, cho phép Status Agent parse tự động.
+# Lấy cảm hứng từ LangGraph Command pattern — gộp state_update + routing.
+
+# ─ Cách dùng ─────────────────────────────────────────────────────
+# Agent thêm block sau vào cuối artifact output (validation-report, _session.md, etc.):
+#
+# ```yaml
+#  # --- AGENT COMMAND ---
+#  agent: "Master Check Agent"
+#  phase: "R.0"
+#  timestamp: "2026-04-03T10:30:00"
+#
+#  state_updates:
+#    current_phase: "R.0"
+#    phase_status: "done"
+#    artifacts.validation_report.verdict: "PASS_WITH_CONCERNS"
+#    artifacts.validation_report.concerns_count: 2
+#    artifacts.validation_report.issues_critical: 0
+#    artifacts.validation_report.issues_major: 0
+#
+#  concerns:
+#    - id: "W-001"
+#      description: "Rate limiting cần implement"
+#      severity: "medium"
+#    - id: "W-002"  
+#      description: "Input sanitization cần verify"
+#      severity: "low"
+#
+#  routing:
+#    next_phase: "B.1"
+#    next_command: "/v.implement"
+#    condition: "human_checkpoint: master_check_approved"
+#    fail_reason: null
+#
+#  human_action_required: true
+#  human_action: "Review concerns list → confirm implement"
+#  # --- END COMMAND ---
+# ```
+# ─────────────────────────────────────────────────────────────────
+
+# Schema cho từng Agent:
+
+# ═══════════════════════════════════════════════════════════════
+# BA Agent (S.1) → sau khi tạo spec
+# ═══════════════════════════════════════════════════════════════
+ba_agent_command:
+  agent: "BA Agent"
+  phase: "S.1"
+  state_updates:
+    current_phase: "S.1"
+    phase_status: "done"
+    artifacts.spec.exists: true
+    artifacts.spec.version: "v1.0"
+    artifacts.spec.status: "draft"
+  routing:
+    next_phase: "S.1"  # chờ human approve spec
+    next_command: null   # human action, không phải agent command
+    condition: "human_checkpoint: spec_approved"
+  human_action_required: true
+  human_action: "Review spec.md → approve hoặc request changes"
+
+# ═══════════════════════════════════════════════════════════════
+# Plan Agent (B.0a) → sau khi tạo plan + tasks
+# ═══════════════════════════════════════════════════════════════
+plan_agent_command:
+  agent: "Plan Agent"
+  phase: "B.0a"
+  state_updates:
+    current_phase: "B.0"
+    phase_status: "done"
+    artifacts.plan.exists: true
+    artifacts.plan.synced_to_spec: "v1.0"
+    artifacts.tasks.exists: true
+    artifacts.tasks.total: 10
+    b0_outputs.plan: { exists: true }
+    b0_outputs.security: { exists: false, skipped: true }
+  routing:
+    next_phase: "R.0"
+    next_command: "/v.check"
+    condition: "test-cases.md must also exist"  # chờ Test Agent hoàn thành
+  human_action_required: false
+
+# ═══════════════════════════════════════════════════════════════
+# Master Check Agent (R.0) → sau khi check
+# ═══════════════════════════════════════════════════════════════
+master_check_command:
+  agent: "Master Check Agent"
+  phase: "R.0"
+  state_updates:
+    current_phase: "R.0"
+    phase_status: "done"
+    artifacts.validation_report.exists: true
+    artifacts.validation_report.verdict: "PASS_WITH_CONCERNS"
+    artifacts.validation_report.spec_version_checked: "v1.0"
+    routing.after_master_check.last_verdict: "PASS_WITH_CONCERNS"
+    routing.after_master_check.last_fail_reason: null
+    routing.after_master_check.route_decision: "implement"
+  concerns:
+    - id: "W-001"
+      description: "Rate limiting"
+  routing:
+    next_phase: "B.1"
+    next_command: "/v.implement"
+    condition: "human_checkpoint: master_check_approved"
+    fail_reason: null  # null | spec_gap | plan_gap | test_gap | nogo_violation | constitution_violation
+  human_action_required: true
+  human_action: "Confirm PASS_WITH_CONCERNS → approve implement"
+
+# ═══════════════════════════════════════════════════════════════
+# Implement Agent (B.1) → sau khi implement xong
+# ═══════════════════════════════════════════════════════════════
+implement_agent_command:
+  agent: "Implement Agent"
+  phase: "B.1"
+  state_updates:
+    current_phase: "B.1"
+    phase_status: "done"
+    artifacts.tasks.completed: 10
+    artifacts.tasks.in_progress: 0
+  concerns_resolved:
+    - id: "W-001"
+      resolved: true
+      resolved_how: "Implemented express-rate-limit middleware"
+  routing:
+    next_phase: "R.1"
+    next_command: "/v.review"
+    condition: null  # không cần human checkpoint
+  human_action_required: false
+
+# ═══════════════════════════════════════════════════════════════
+# Review Agent (R.1) → sau khi review xong
+# ═══════════════════════════════════════════════════════════════
+review_agent_command:
+  agent: "Review Agent"
+  phase: "R.1"
+  state_updates:
+    current_phase: "R.1"
+    phase_status: "done"
+    artifacts.code_review.exists: true
+    artifacts.code_review.verdict: "APPROVED"
+    routing.after_review.last_verdict: "APPROVED"
+    routing.after_review.route_decision: "deploy"
+  routing:
+    next_phase: "M.0"
+    next_command: "/v.retrospective"
+    condition: null
+  human_action_required: true
+  human_action: "Deploy to production → run retrospective"
+
+# ═══════════════════════════════════════════════════════════════
+# BA Critic Agent (S.1) → sau mỗi round review
+# ═══════════════════════════════════════════════════════════════
+ba_critic_command:
+  agent: "BA Critic Agent"
+  phase: "S.1"
+  state_updates:
+    current_phase: "S.1"
+    phase_status: "awaiting_human"
+  routing:
+    # CONVERGED → B.0
+    next_phase_converged: "B.0"
+    next_command_converged: "/v.plan + /v.test"
+    # ITERATE → S.1 (BA Agent sửa)
+    next_phase_iterate: "S.1"
+    next_command_iterate: "BA Agent sửa spec → /v.ba-critic"
+    # ESCALATE → Human
+    next_phase_escalate: "S.1"
+    next_command_escalate: null
+  human_action_required: true
+  human_action: "Review verdict → approve hoặc escalate"
+
+# ═══════════════════════════════════════════════════════════════
+# Test Agent (B.0b) → sau khi tạo test cases
+# ═══════════════════════════════════════════════════════════════
+test_agent_command:
+  agent: "Test Agent"
+  phase: "B.0b"
+  state_updates:
+    current_phase: "B.0b"
+    phase_status: "done"
+    artifacts.test_cases.exists: true
+    artifacts.test_cases.synced_to_spec: "v1.0"
+    artifacts.test_cases.total: 15
+    b0_outputs.tests: { exists: true }
+  routing:
+    next_phase: "R.0"
+    next_command: "/v.check"
+    condition: "plan.md must also exist"  # chờ Plan Agent
+  human_action_required: false
+
+# ═══════════════════════════════════════════════════════════════
+# Sync Agent (Any) → sau khi sync artifacts
+# ═══════════════════════════════════════════════════════════════
+sync_agent_command:
+  agent: "Sync Agent"
+  phase: "sync"  # meta-phase, not in pipeline
+  state_updates:
+    artifacts.plan.synced_to_spec: "v1.1"
+    artifacts.tasks.synced_to_spec: "v1.1"
+    artifacts.test_cases.synced_to_spec: "v1.1"
+    artifacts.validation_report.verdict: "PENDING_RECHECK"
+    spec_version_latest: "v1.1"
+  routing:
+    next_phase: "R.0"
+    next_command: "/v.check"             # bắt buộc re-check
+    condition: null
+  human_action_required: false
+
+# ═══════════════════════════════════════════════════════════════
+# Metrics Agent (M.0) → sau khi thu thập metrics
+# ═══════════════════════════════════════════════════════════════
+metrics_agent_command:
+  agent: "Metrics Agent"
+  phase: "M.0"
+  state_updates:
+    current_phase: "M.0"
+    phase_status: "done"
+  routing:
+    next_phase: "complete"
+    next_command: "/v.retrospective"     # nếu chưa chạy
+    condition: null
+  human_action_required: false
+
+# ═══════════════════════════════════════════════════════════════
+# Retrospective Agent (After R.1) → sau khi tổng kết
+# ═══════════════════════════════════════════════════════════════
+retrospective_agent_command:
+  agent: "Retrospective Agent"
+  phase: "retro"
+  state_updates:
+    current_phase: "complete"
+    phase_status: "done"
+  routing:
+    next_phase: null
+    next_command: null                    # feature complete
+    condition: null
+  human_action_required: false

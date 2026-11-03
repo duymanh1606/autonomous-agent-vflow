@@ -1,0 +1,32 @@
+{
+  "setup_questions": [
+    {
+      "id": "min_issues",
+      "question": "Số issues tối thiểu phải tìm?",
+      "type": "number",
+      "default": 3
+    },
+    {
+      "id": "review_depth",
+      "question": "Review depth?",
+      "options": ["quick", "standard", "deep"],
+      "default": "standard",
+      "description": "quick = correctness + security only. standard = 5 chiều. deep = + performance profiling."
+    },
+    {
+      "id": "auto_grep_security",
+      "question": "Tự động grep security patterns?",
+      "type": "boolean",
+      "default": true
+    }
+  ],
+  "hooks": {
+    "pre_review": "Load spec.md + validation-report.md concerns (W-xxx) trước khi review",
+    "post_review": "Verify concern resolution count matches expected"
+  },
+  "memory": {
+    "file": "review-history.log",
+    "format": "[date] | [feature] | [issues_found] | [critical] | [major] | [minor] | [concerns_resolved]",
+    "purpose": "Track review quality over time — dùng cho /v.metrics"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "_note": "setup_questions là PROMPT. Đáp án resolve persist vào .v-flow/config.yaml (nogo_strict_mode, nogo_source). Thiếu → dùng default dưới đây.",
+  "answers_persisted_to": ".v-flow/config.yaml",
+  "setup_questions": [
+    {
+      "id": "strict_mode",
+      "question": "No-Go Zone enforcement level?",
+      "options": ["strict", "warning", "log"],
+      "default": "strict",
+      "description": "strict = BLOCK mọi vi phạm. warning = WARN nhưng cho phép nếu có approval. log = chỉ ghi log."
+    },
+    {
+      "id": "nogo_source",
+      "question": "No-Go Zones đọc từ đâu?",
+      "options": ["context.md", "constitution.md", "both"],
+      "default": "both"
+    }
+  ],
+  "hooks": {
+    "pre_file_edit": "Kiểm tra file path against No-Go Zones list trước mỗi edit",
+    "pre_command": "Validate scope — command không ảnh hưởng No-Go Zone files"
+  },
+  "memory": {
+    "file": "nogo-violations.log",
+    "format": "[date] | [feature] | [task] | [file_attempted] | [nogo_zone] | [action_taken]",
+    "purpose": "Track violations — giúp identify patterns lặp lại"
+  }
+}

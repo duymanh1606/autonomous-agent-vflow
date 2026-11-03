@@ -1,0 +1,62 @@
+{
+  "name": "v-flow-cli",
+  "version": "1.5.0",
+  "description": "CLI toolkit for V Flow — Agentic AI Software Development Process (Spec-Driven Development)",
+  "main": "cli/index.js",
+  "bin": {
+    "v-flow": "./cli/index.js"
+  },
+  "files": [
+    "cli/",
+    "agents/",
+    "commands/",
+    "skills/",
+    "templates/",
+    "AGENTS.md",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "lint": "eslint cli/ tests/",
+    "lint:fix": "eslint cli/ tests/ --fix",
+    "validate": "node cli/index.js validate",
+    "validate:strict": "node cli/index.js validate --strict",
+    "prepublishOnly": "npm run lint && npm test"
+  },
+  "keywords": [
+    "v-flow",
+    "spec-driven-development",
+    "agentic-ai",
+    "sdlc",
+    "ai-agents",
+    "specification"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quochoang228/v-Flow.git"
+  },
+  "bugs": {
+    "url": "https://github.com/quochoang228/v-Flow/issues"
+  },
+  "homepage": "https://github.com/quochoang228/v-Flow#readme",
+  "author": "quochoang228",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^12.0.0",
+    "fs-extra": "^11.2.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "exceljs": "^4.4.0",
+    "jest": "^30.3.0",
+    "markdown-docx": "^1.6.0"
+  }
+}

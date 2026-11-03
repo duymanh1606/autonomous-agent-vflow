@@ -1,0 +1,41 @@
+{
+  "setup_questions": [
+    {
+      "id": "min_unchanged",
+      "question": "Số Unchanged Behaviors (BUG-U) tối thiểu phải document?",
+      "type": "number",
+      "default": 2,
+      "description": "Tối thiểu 2 BUG-U để đảm bảo regression prevention có ý nghĩa."
+    },
+    {
+      "id": "confidence_threshold",
+      "question": "Confidence level tối thiểu để proceed implement?",
+      "options": ["high", "medium", "low"],
+      "default": "medium",
+      "description": "high = chỉ proceed khi chắc chắn. medium = proceed kèm cảnh báo. low = DỪNG, cần debug thêm."
+    },
+    {
+      "id": "max_scope_files",
+      "question": "Số files thay đổi tối đa trước khi escalate?",
+      "type": "number",
+      "default": 10,
+      "description": "Nếu scope > N files → cân nhắc escalate sang /v.specify full pipeline."
+    },
+    {
+      "id": "design_phase",
+      "question": "Bắt buộc Phase 2 (Fix Design)?",
+      "options": ["required", "optional", "auto"],
+      "default": "auto",
+      "description": "required = luôn tạo design.md. optional = skip nếu root cause rõ. auto = tự quyết dựa trên complexity."
+    }
+  ],
+  "hooks": {
+    "pre_analysis": "Scan codebase → trace execution path → build root cause hypothesis",
+    "post_analysis": "Verify 3-behavior model đầy đủ, mapping matrix complete, append _session.md"
+  },
+  "memory": {
+    "file": "bugfix-history.log",
+    "format": "[date] | [bug_id] | [severity] | [confidence] | [behaviors_b] | [behaviors_e] | [behaviors_u] | [tests_t1] | [tests_t2] | [tests_t3] | [verdict]",
+    "purpose": "Track bugfix quality — dùng cho /v.metrics và /v.retrospective"
+  }
+}

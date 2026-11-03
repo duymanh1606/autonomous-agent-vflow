@@ -1,0 +1,88 @@
+---
+description: "Sync Agent — Cập nhật plan/tasks/tests khi spec thay đổi"
+phase: "Any"
+agent: "sync-agent"
+---
+
+# /v.sync
+
+> Orchestration wrapper cho **Sync Agent**. Đọc `agents/sync-agent.md` để thực hiện core logic.
+
+> **Nguyên tắc cốt lõi**: `spec.md` là Single Source of Truth — spec luôn thắng.
+
+## Điều kiện tiên quyết
+- `spec.md` đã được chỉnh sửa (bump version) sau khi đã có plan/tasks/tests
+- Artifact Sync Status trong spec.md Status block có **❌** (cần sync)
+- `plan.md`, `tasks.md`, `test-cases.md` phải tồn tại
+
+## Execution
+1. Đọc agent definition: `agents/sync-agent.md`
+2. Thực hiện toàn bộ quy trình trong agent definition
+3. Báo cáo sync summary
+4. **Nếu feature có `slicing.active_variant`**: chạy `v-flow slice impact <feature>`
+   - Chuỗi tính: bước/REQ bị sửa → luồng chứa bước đó + luồng E/A rẽ từ bước đó → AC → task → slice
+   - Slice chứa phần đổi → `needs_recheck` (slice đã `done` được mở lại với ID cũ); slice hậu duệ → `needs_regression`
+   - Task mới chưa thuộc slice nào (R1) → gán tay vào variant, hoặc `v-flow slice plan <feature> --keep-done` rồi `v-flow slice use … --unlock --reason "…"`
+
+## Options
+
+### (không có argument) — Feature hiện tại
+Sync artifacts cho feature đang active trong context.
+
+### --dry-run — Chỉ báo cáo, không sửa
+```
+/v.sync --dry-run
+```
+Hiển thị delta analysis mà không thay đổi files.
+
+---
+
+## 🔀 Routing Rules — Sau Sync
+
+```
+Sync hoàn tất
+  → Route: /v.check (BẮT BUỘC — validation-report cũ không còn giá trị)
+
+Sync hoàn tất + có slice plan
+  → Route: /v.check --slice <từng slice needs_recheck>; slice khác chạy tiếp
+
+Change quá lớn (architecture impact)
+  → Route: /v.plan (re-plan từ đầu)
+```
+
+## Cập nhật State & Session
+
+**Cập nhật `.flow-state.yaml`**:
+```yaml
+spec_version_latest: "vX.Y"
+artifacts:
+  plan:
+    synced_to_spec: "vX.Y"
+  tasks:
+    synced_to_spec: "vX.Y"
+  test_cases:
+    synced_to_spec: "vX.Y"
+  validation_report:
+    verdict: "PENDING_RECHECK"
+```
+
+**Append vào `_session.md`**:
+```markdown
+### [Sync] Spec Sync — [YYYY-MM-DD]
+- **Agent**: Sync Agent
+- **Trigger**: spec v[old] → v[new]
+- **Changes**: [+N tasks, ~M modified, -K superseded]
+- **Tests updated**: [+N, ~M, -K]
+- **Validation**: Reset to PENDING RECHECK
+- **Routing**: → /v.check (mandatory)
+```
+
+---
+
+## Ví dụ
+
+```
+/v.sync
+/v.sync feature 001-user-login
+/v.sync --dry-run
+```
