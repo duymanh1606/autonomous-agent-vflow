@@ -13,6 +13,7 @@ agent: "plan-agent"
 
 ## Điều kiện tiên quyết
 - `spec.md` đã approved, `tasks.md` và `test-cases.md` đã có
+  *(chế độ `--vsaf` yêu cầu thêm: `.v-flow/architecture/project_wbs.md` đã có `approved_by` — xem `/v.wbs`)*
 - Mapping của task ghi tới **mức luồng** (`UC-01.main`, `UC-01-E1`) — task chỉ ghi `UC-01` bị hiểu là phục vụ mọi luồng của UC (kèm cảnh báo)
 - `slicing.enabled` không phải `false` trong `.v-flow/slicing.config.yaml`
 
@@ -44,6 +45,48 @@ Chỉ sinh variant bằng strategy này (xem `v-flow slice strategies`), bỏ qu
 ### --experiment
 Dùng `--profile experiment` khi plan/compare để thấy hết vi phạm mà không bị chặn. Bước `use` luôn chạy `strict`.
 
+### --vsaf
+Cắt lát bằng **động cơ VSAF** thay vì strategy của V-Flow: đọc `project_wbs.md` (WBS as-built toàn
+hệ thống) thay vì chỉ `tasks.md`, nên slice phân rã theo **tầng kiến trúc** (hạ tầng → data → BE →
+contract → UI) chứ không theo luồng UC. Hướng dẫn đầy đủ:
+[`docs/vsaf-hybrid-slicing.md`](../docs/vsaf-hybrid-slicing.md).
+
+```bash
+# 1. Động cơ VSAF: seam test + 8 invariant gate → .v-flow/slices/SLICE-*.md
+#    (skill ntapp-slice-planning; path lấy từ .bmm-config.yaml ở gốc repo)
+#    Bước duyệt của skill là cổng của NGƯỜI: không emit khi chưa duyệt.
+
+# 2. Nạp manifest vào V-Flow — CLI làm mọi phép tính
+v-flow slice import-vsaf <feature> --check     # audit G1–G5 + in ánh xạ slice↔unit↔task, không ghi
+v-flow slice import-vsaf <feature>             # ghi slicing/variants/vsaf.yaml + slicing/vsaf-map.md
+v-flow slice check <feature> --variant vsaf    # luật R1–R11
+v-flow slice compare <feature>                 # đặt vsaf cạnh main-first / per-flow
+```
+
+**Hai tầng kiểm, đừng lẫn:**
+
+| Tầng | Chạy bởi | Kiểm trên | Bắt gì |
+|:--|:--|:--|:--|
+| G1–G5 (VSAF) | `slice import-vsaf` | WBS unit trong `SLICE-*.md` | coverage unit, demoable, DAG, AFK/HITL marked, story-mappable |
+| G6–G7 (VSAF) | **người duyệt** | ngữ nghĩa seam | AFK/HITL purity, thinness — in ra để người xác nhận, CLI không tự phán |
+| R1–R11 (V-Flow) | `slice check` | task `T-xxx` + luồng UC | coverage task/luồng, thứ tự nhánh, size, TC, metrics |
+
+G1–G5 FAIL → `import-vsaf` **dừng, không ghi gì** (`--force` chỉ để thử nghiệm). G8 Precedence của
+VSAF tương ứng R6 của V-Flow nên chỉ kiểm một lần, ở tầng task.
+
+**Khác biệt bất biến giữa hai engine** (đã xử lý, không phải lỗi):
+- VSAF cho một **luồng UC trải nhiều slice** (cắt theo tầng); R2 của V-Flow đòi luồng thuộc đúng
+  một slice → importer gán task và luồng cho **slice sớm nhất** chạm tới nó (thứ tự topo của
+  `blocked_by`).
+- WBS phủ **toàn hệ thống as-built**, `tasks.md` chỉ phủ phạm vi feature → nhiều slice as-built
+  không có task/TC nào, làm `R4-demoable` và `R9-has-tests` báo lỗi. Dự án nào chạy hybrid thì hạ
+  hai luật đó xuống `warn` trong `profiles.strict` của `.v-flow/slicing.config.yaml` **và ghi lý do
+  ngay trong file đó**; phần "thiếu câu demo" của G2 vẫn bị `import-vsaf` chặn cứng.
+
+Variant `vsaf` sau đó dùng y như variant thường: `slice use`, `--lock`, `/v.implement --slice SLICE-N`.
+Đổi cách cắt thì **sửa `SLICE-*.md` rồi `import-vsaf` lại** — không sửa tay `vsaf.yaml` (schema
+variant chỉ giữ `id/name/flows/units/depends_on/demo/type`, mọi khóa khác bị loại khi chuẩn hoá).
+
 ## Thử nghiệm (không đụng spec, plan hay code)
 
 | Muốn thử | Lệnh |
@@ -64,6 +107,9 @@ Variant đã use --lock
 
 Graph có tham chiếu hỏng / task không map luồng
   → Route: /v.plan hoặc /v.test để sửa mapping, rồi /v.slice lại
+
+Muốn cắt theo tầng kiến trúc as-built thay vì theo luồng UC
+  → /v.slice --vsaf (cần project_wbs.md — chạy /v.wbs trước)
 
 Người duyệt muốn đổi variant đã khóa / đã có slice chạy
   → v-flow slice use <feature> <v> --unlock --reason "…" (lý do ghi vào _session.md)
@@ -97,4 +143,5 @@ phase_status: "done"
 /v.slice                                 ← feature hiện tại, 3 variant mặc định
 /v.slice 001-user-login --strategy seam
 /v.slice --experiment
+/v.slice 001-user-login --vsaf                ← cắt theo WBS chuẩn VSAF
 ```

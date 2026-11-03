@@ -1,0 +1,42 @@
+# .bmm-config.yaml — VSAF / NTAPP Bridge cho V-Flow Single-Repo
+#
+# Skill VSAF (`ntapp-slice-planning`, `ntapp-*`) resolve path theo cascade 3 tầng:
+#   Layer 1  {project-root}/_bmad/bmm/config.yaml   ← KHÔNG tồn tại trong V-Flow
+#   Layer 2  {project-root}/.bmm-config.yaml        ← FILE NÀY
+#   Layer 3  interactive fallback (hỏi người)
+#
+# V-Flow không dựng `_bmad/`, nên file này khai cả key Layer-1 (dạng top-level)
+# lẫn section per-skill, để skill VSAF đọc/ghi trực tiếp vào cây `.v-flow/` mà
+# không cần Dual-Repo. Giữ nguyên tên key chuẩn VSAF — đổi tên là mất cascade.
+#
+# Đặc tả: docs/dac_ta_tich_hop_vflow_vsaf_slicing.md §3.2
+
+project_name: autonomous-agent-vflow
+
+# ─── Key chuẩn Layer 1 (V-Flow mapping) ─────────────────────────────
+stage_1_discovery: ".v-flow"
+stage_2_architecture: ".v-flow/architecture"
+planning_artifacts: ".v-flow/slices"
+implementation_artifacts: ".v-flow/features"
+project_knowledge: ".v-flow/knowledge"
+document_output_language: "vi"
+communication_language: "Vietnamese"
+
+# ─── Khai quy chuẩn tương thích per-skill (Layer 2 override) ────────
+# `planning_artifacts` là key skill thật sự đọc để biết nơi EMIT slice manifest;
+# `wbs_path` / `slices_out` / `module_0_path` là bản ghi tường minh cho người đọc
+# và cho adapter `.v-flow/scripts/vsaf_slice_sync.py`.
+ntapp-slice-planning:
+  planning_artifacts: ".v-flow/slices"
+  stage_2_architecture: ".v-flow/architecture"
+  wbs_path: ".v-flow/architecture/project_wbs.md"
+  slices_out: ".v-flow/slices"
+  module_0_path: ".v-flow/architecture/00_system_connectivity_integration.md"
+
+# Bộ sinh WBS của V-Flow (lệnh /v.wbs) — không phải skill VSAF, khai ở đây để
+# adapter và lệnh /v.slice --vsaf dùng chung một nguồn path.
+vflow-wbs-synthesizer:
+  wbs_out: ".v-flow/architecture/project_wbs.md"
+  task_map_out: ".v-flow/architecture/wbs-task-map.yaml"
+  context_in: ".v-flow/context.md"
+  modules_in: ".v-flow/modules"

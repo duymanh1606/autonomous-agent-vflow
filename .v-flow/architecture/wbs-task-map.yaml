@@ -1,0 +1,35 @@
+# wbs-task-map.yaml — cầu nối WBS unit (chuẩn VSAF) ↔ task V-Flow (tasks.md)
+#
+# Vì sao cần file này: slice manifest VSAF nói bằng **WBS unit** (OPS-01, BE-SUP-01…),
+# còn bộ luật slice của V-Flow (R1–R11) kiểm trên **task graph** (T-001…). Adapter
+# `.v-flow/scripts/vsaf_slice_sync.py` dùng map này để dịch `units[]` của SLICE-*.md
+# sang `units: [T-xxx]` trong `slicing/variants/vsaf.yaml`.
+#
+# Quy tắc:
+# - Một task có thể xuất hiện ở nhiều unit. Adapter gán task vào **slice sớm nhất**
+#   (theo thứ tự topo của `blocked_by`) để giữ R1 "task thuộc đúng một slice".
+# - Unit không có task V-Flow nào → bỏ khỏi file này (as-built nhưng chưa được đặc tả
+#   trong feature hiện tại). Đó là chuyện bình thường: WBS là baseline toàn hệ thống,
+#   `tasks.md` chỉ phủ phạm vi feature đang làm.
+# - `flows` không khai tay — adapter suy từ `slicing/graph.json` (task → flows).
+
+feature: 001-autonomous-agent-vflow
+wbs: .v-flow/architecture/project_wbs.md
+
+units:
+  BE-DAT-01:  [T-001]          # schema + migrations áp dụng sạch
+  BE-DAT-02:  [T-002]          # cô lập dữ liệu theo account (RLS)
+  BE-SUP-01:  [T-013]          # đăng nhập operator
+  BE-SUP-03:  [T-013]          # start/stop/pause/resume account
+  SCR-AUTH:   [T-013]          # màn đăng nhập
+  OPS-04:     [T-014]          # từ chối đăng nhập / quota / Cloudflare Access
+  BE-AGT-01:  [T-003]          # quét inbox → MessageEvent
+  BE-AGT-02:  [T-003]          # dedupe/lease cho MessageEvent
+  BE-AGT-03:  [T-005]          # tin nhắn không hỗ trợ (phân tích & định tuyến)
+  BE-AGT-04:  [T-004, T-007]   # sinh trả lời + validator; đường dự phòng khi LLM lỗi
+  BE-AGT-13:  [T-008]          # tra cứu sản phẩm cho câu hỏi giá/tồn kho
+  BE-AGT-09:  [T-006]          # handoff khi cần người
+  BE-AGT-08:  [T-011, T-012]   # follow-up + điều kiện bỏ qua
+  BE-SUP-04:  [T-009, T-010]   # takeover/gửi tay/release + kiểm quyền operator
+  BE-SUP-06:  [T-015]          # tạo/cập nhật đơn hàng
+  BE-SUP-14:  [T-016]          # đồng bộ Google Sheet best-effort

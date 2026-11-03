@@ -1,0 +1,187 @@
+variant: vsaf
+provenance:
+  strategy: manual
+  params:
+    foundation: auto
+    hub_policy: first-consumer
+    from: .v-flow/slices
+  graph_hash: e7dc5f25
+  spec_version: v1.0
+  created_at: '2026-11-03T09:22:52.176Z'
+  created_by: vsaf
+  source_meta:
+    source: vsaf-slice-planning
+    slices_dir: .v-flow/slices
+    wbs: .v-flow/architecture/project_wbs.md
+    task_map: .v-flow/architecture/wbs-task-map.yaml
+    manifests: 24
+slices:
+  - id: SLICE-1
+    name: operator login tracer
+    flows: [UC-04-A1, UC-04.main]
+    units: [T-001, T-002, T-013]
+    depends_on: []
+    demo: Operator mở dashboard qua nginx, đăng nhập và thấy phiên của mình; dữ liệu account A không đọc được từ account B
+    type: AFK
+  - id: SLICE-2
+    name: password reset
+    flows: []
+    units: []
+    depends_on: [SLICE-1]
+    demo: Operator quên mật khẩu, nhận token đặt lại và đổi được mật khẩu ở màn Reset Password
+    type: AFK
+  - id: SLICE-3
+    name: users admin
+    flows: []
+    units: []
+    depends_on: [SLICE-1]
+    demo: Admin tạo / khoá / xoá user và cấp quyền workspace, user mới đăng nhập được
+    type: AFK
+  - id: SLICE-4
+    name: workspace lifecycle api
+    flows: []
+    units: []
+    depends_on: [SLICE-1]
+    demo: Operator gọi API tạo workspace rồi start/stop, Supervisor spawn được tiến trình agent + Chrome + Xvfb/noVNC
+    type: AFK
+  - id: SLICE-22
+    name: ops ci backup maintenance
+    flows: []
+    units: []
+    depends_on: [SLICE-1]
+    demo: CI chạy xanh; backup + restore check và maintenance timer hoạt động trên dữ liệu thật
+    type: AFK
+  - id: SLICE-23
+    name: cloudflare tunnel access
+    flows: [UC-04-E1, UC-04-E2]
+    units: [T-014]
+    depends_on: [SLICE-1]
+    demo: Dashboard truy cập được từ ngoài qua Cloudflare tunnel + Access; sai mật khẩu / tài khoản bị khoá / quota bị từ chối đúng
+    type: HITL
+  - id: SLICE-5
+    name: home shell
+    flows: []
+    units: []
+    depends_on: [SLICE-4]
+    demo: Operator thấy danh sách workspace ở Home, mở dialog tạo workspace mới và điều hướng bằng sidebar/topbar
+    type: AFK
+  - id: SLICE-6
+    name: agent control plane
+    flows: []
+    units: []
+    depends_on: [SLICE-4]
+    demo: Supervisor gọi /control/status, pause/resume một agent và nhận được event qua SSE
+    type: AFK
+  - id: SLICE-7
+    name: realtime activity
+    flows: []
+    units: []
+    depends_on: [SLICE-5, SLICE-6]
+    demo: Operator mở Activity và thấy event của agent chảy về realtime
+    type: AFK
+  - id: SLICE-9
+    name: tiktok browser actions
+    flows: []
+    units: []
+    depends_on: [SLICE-6]
+    demo: Agent điều khiển Chrome qua CDP, nhận diện màn hình TikTok và thực hiện được một hành động UI dưới cổng chính sách
+    type: HITL
+  - id: SLICE-11
+    name: gemini llm client
+    flows: []
+    units: []
+    depends_on: [SLICE-6]
+    demo: Agent gọi Gemini generateContent lấy structured output và chạy được vision fallback
+    type: HITL
+  - id: SLICE-15
+    name: logs health
+    flows: []
+    units: []
+    depends_on: [SLICE-5]
+    demo: Operator xem log và tình trạng health/healthz của workspace
+    type: AFK
+  - id: SLICE-17
+    name: products
+    flows: []
+    units: []
+    depends_on: [SLICE-5]
+    demo: Operator tạo/sửa sản phẩm, upload media và chọn được sản phẩm từ picker
+    type: AFK
+  - id: SLICE-18
+    name: orders shipping
+    flows: [UC-05.main]
+    units: [T-015]
+    depends_on: [SLICE-5]
+    demo: Operator tạo đơn hàng, đổi trạng thái và cấu hình vận chuyển; đơn chỉ hiện theo đúng account
+    type: AFK
+  - id: SLICE-20
+    name: behavior config
+    flows: []
+    units: []
+    depends_on: [SLICE-5, SLICE-6]
+    demo: Operator sửa kịch bản/phong cách/ngôn ngữ/follow-up/settings và agent nhận được cấu hình mới
+    type: AFK
+  - id: SLICE-24
+    name: egw egress gateway
+    flows: []
+    units: []
+    depends_on: [SLICE-5]
+    demo: Operator gán egress proxy EGW cho một workspace và agent đi ra internet qua proxy đó
+    type: HITL
+  - id: SLICE-8
+    name: dashboard runs
+    flows: []
+    units: []
+    depends_on: [SLICE-5, SLICE-7]
+    demo: Operator xem Dashboard, lập và huỷ một run đa account, tìm nhanh bằng command palette
+    type: AFK
+  - id: SLICE-10
+    name: chrome extension bridge
+    flows: []
+    units: []
+    depends_on: [SLICE-9]
+    demo: Extension quan sát DOM TikTok và thực thi hành động qua bridge tới agent local
+    type: HITL
+  - id: SLICE-12
+    name: inbox ingestion
+    flows: [UC-01.main]
+    units: [T-003]
+    depends_on: [SLICE-9]
+    demo: Tin nhắn mới trên TikTok được phát hiện, dedupe/lease đúng một lần và tạo task LangGraph có checkpoint
+    type: AFK
+  - id: SLICE-19
+    name: sheet export
+    flows: [UC-05-E1]
+    units: [T-016]
+    depends_on: [SLICE-18]
+    demo: Một đơn hàng được export thành hàng dữ liệu trên Google Sheet qua Apps Script
+    type: HITL
+  - id: SLICE-13
+    name: auto reply
+    flows: [UC-01-E1, UC-01-E3, UC-01-A1]
+    units: [T-005, T-004, T-007, T-008]
+    depends_on: [SLICE-11, SLICE-12]
+    demo: Khách nhắn tin mới, agent phân tích ý định và tự gửi đúng một trả lời đã validate; restart không gửi trùng
+    type: AFK
+  - id: SLICE-14
+    name: takeover conversations
+    flows: [UC-01-E2, UC-02.main, UC-02-E1, UC-02-E2]
+    units: [T-006, T-009, T-010]
+    depends_on: [SLICE-7, SLICE-13]
+    demo: Operator mở hội thoại, takeover, gửi tin tay rồi release; trong lúc takeover agent không tự trả lời
+    type: AFK
+  - id: SLICE-21
+    name: followup
+    flows: [UC-03.main, UC-03-E1, UC-03-E2]
+    units: [T-011, T-012]
+    depends_on: [SLICE-13, SLICE-20]
+    demo: Khách im lặng đủ ngưỡng nhận đúng một tin follow-up; đã nudge / đang takeover / ngoài giờ thì bỏ qua
+    type: AFK
+  - id: SLICE-16
+    name: notifications alerts
+    flows: []
+    units: []
+    depends_on: [SLICE-14, SLICE-15]
+    demo: Một escalation sinh ra thông báo in-app, Web Push và email; cảnh báo hiện ở màn Alerts
+    type: HITL
+deferred: []

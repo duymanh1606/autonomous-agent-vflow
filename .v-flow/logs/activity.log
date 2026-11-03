@@ -1043,3 +1043,2360 @@ PY
 v-flow validate 001-autonomous-agent-vflow --strict 2>&1 | tail -3
 2026-11-03T02:05:27.560Z  [hook:claude] Stop
 2026-11-03T02:09:20.527Z  [hook:claude] Stop
+
+── 2026-11-03T07:36:09.374Z  v-flow slice check 001-autonomous-agent-vflow --variant main-first  (exit 0, 133ms) ──
+
+🔎 Check main-first
+
+   ⚠️  Luật (profile strict): 0 lỗi, 1 cảnh báo
+      ! R8-size (SLICE-9): SLICE-9 có 1 điểm < min_points 2
+
+
+── 2026-11-03T08:26:31.616Z  v-flow slice plan 001-autonomous-agent-vflow --strategy seam  (exit 0, 210ms) ──
+
+✂️  Variant seam (seam)
+
+   SLICE-0   Nền tảng [AFK]
+             luồng: — · task: T-001, T-002 · sau: —
+   SLICE-1   UC-01.main — Tự động trả lời tin nhắn khách trên TikTok [AFK]
+             luồng: UC-01.main · task: T-003, T-004 · sau: SLICE-0
+   SLICE-2   UC-02.main — Operator tiếp quản và trả lại hội thoại [AFK]
+             luồng: UC-02.main · task: T-009 · sau: SLICE-1
+   SLICE-3   UC-03.main — Follow-up khách im lặng [AFK]
+             luồng: UC-03.main · task: T-011 · sau: SLICE-1
+   SLICE-4   UC-04.main — Vận hành account từ dashboard [AFK]
+             luồng: UC-04.main · task: T-013 · sau: SLICE-0
+   SLICE-5   UC-05.main — Quản lý đơn hàng và đồng bộ Google Sheet [AFK]
+             luồng: UC-05.main · task: T-015 · sau: SLICE-0
+   SLICE-6   UC-01-E1 — Tin là placeholder không hỗ trợ (ảnh/sticker không đọc được) [AFK]
+             luồng: UC-01-E1 · task: T-005 · sau: SLICE-1
+   SLICE-7   UC-01-E2 — Khách yêu cầu người thật / agent không chắc / chủ đề nhạy cảm [AFK]
+             luồng: UC-01-E2 · task: T-006 · sau: SLICE-1
+   SLICE-8   UC-01-E3 — LLM lỗi/timeout hoặc `ReplyValidator` từ chối [AFK]
+             luồng: UC-01-E3 · task: T-007 · sau: SLICE-1
+   SLICE-9   UC-01-A1 — Khách hỏi giá/tồn kho sản phẩm [AFK]
+             luồng: UC-01-A1 · task: T-008 · sau: SLICE-1
+   SLICE-10  UC-02-E1 — Operator không có quyền trên account hoặc hội thoại không tồn tại [AFK]
+             luồng: UC-02-E1 · task: T-010 · sau: SLICE-2
+   SLICE-11  UC-02-E2 — Gửi tin thất bại (extension/TikTok lỗi) [AFK]
+             luồng: UC-02-E2 · task: — · sau: SLICE-10
+   SLICE-12  UC-03-E1 — Đã nudge rule này cho đúng lần im lặng này [AFK]
+             luồng: UC-03-E1 · task: T-012 · sau: SLICE-3
+   SLICE-13  UC-03-E2 — Ngoài giờ hoạt động hoặc hội thoại đang takeover [AFK]
+             luồng: UC-03-E2 · task: — · sau: SLICE-12
+   SLICE-14  UC-04-E1 — Sai mật khẩu / tài khoản bị khóa [AFK]
+             luồng: UC-04-E1 · task: T-014 · sau: SLICE-4
+   SLICE-15  UC-04-E2 — Vượt `max-workspaces` hoặc không có quyền account [AFK]
+             luồng: UC-04-E2 · task: — · sau: SLICE-14
+   SLICE-16  UC-04-A1 — Operator pause/resume [AFK]
+             luồng: UC-04-A1 · task: — · sau: SLICE-4
+   SLICE-17  UC-05-E1 — Webhook lỗi/timeout/chưa cấu hình [HITL]
+             luồng: UC-05-E1 · task: T-016 · sau: SLICE-5
+
+   ❌ Luật (profile strict): 22 lỗi, 6 cảnh báo
+      ✖ R4-demoable (SLICE-0): SLICE-0 có câu demo tạm "TODO: Nền tảng" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-1): SLICE-1 có câu demo tạm "TODO: UC-01.main — Tự động trả lời tin nhắn khách trên TikTok" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-2): SLICE-2 có câu demo tạm "TODO: UC-02.main — Operator tiếp quản và trả lại hội thoại" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-3): SLICE-3 có câu demo tạm "TODO: UC-03.main — Follow-up khách im lặng" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-4): SLICE-4 có câu demo tạm "TODO: UC-04.main — Vận hành account từ dashboard" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-5): SLICE-5 có câu demo tạm "TODO: UC-05.main — Quản lý đơn hàng và đồng bộ Google Sheet" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-6): SLICE-6 có câu demo tạm "TODO: UC-01-E1 — Tin là placeholder không hỗ trợ (ảnh/sticker không đọc được)" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-7): SLICE-7 có câu demo tạm "TODO: UC-01-E2 — Khách yêu cầu người thật / agent không chắc / chủ đề nhạy cảm" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-8): SLICE-8 có câu demo tạm "TODO: UC-01-E3 — LLM lỗi/timeout hoặc `ReplyValidator` từ chối" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-9): SLICE-9 có câu demo tạm "TODO: UC-01-A1 — Khách hỏi giá/tồn kho sản phẩm" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-10): SLICE-10 có câu demo tạm "TODO: UC-02-E1 — Operator không có quyền trên account hoặc hội thoại không tồn tại" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-11): SLICE-11 có câu demo tạm "TODO: UC-02-E2 — Gửi tin thất bại (extension/TikTok lỗi)" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-12): SLICE-12 có câu demo tạm "TODO: UC-03-E1 — Đã nudge rule này cho đúng lần im lặng này" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-13): SLICE-13 có câu demo tạm "TODO: UC-03-E2 — Ngoài giờ hoạt động hoặc hội thoại đang takeover" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-14): SLICE-14 có câu demo tạm "TODO: UC-04-E1 — Sai mật khẩu / tài khoản bị khóa" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-15): SLICE-15 có câu demo tạm "TODO: UC-04-E2 — Vượt `max-workspaces` hoặc không có quyền account" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-16): SLICE-16 có câu demo tạm "TODO: UC-04-A1 — Operator pause/resume" — cần viết câu demo thật
+      ✖ R4-demoable (SLICE-17): SLICE-17 có câu demo tạm "TODO: UC-05-E1 — Webhook lỗi/timeout/chưa cấu hình" — cần viết câu demo thật
+      ! R8-size (SLICE-6): SLICE-6 có 1 điểm < min_points 2
+      ! R8-size (SLICE-11): SLICE-11 có 0 điểm < min_points 2
+      … và 8 vi phạm khác
+   slice_count=18 · points_per_slice=1.9 / 6 · size_cv=0.79 · first_demo_points=9 · foundation_ratio=0.09 · critical_path=5 · parallel_width=9 · cross_slice_ratio=0.87 · uc_spread=3.4 · rework_exposure=7.07
+
+   → /home/duymanh/lab/autonomous-agent-vflow/.v-flow/features/001-autonomous-agent-vflow/slicing/variants/seam.yaml
+
+
+── 2026-11-03T08:48:33.722Z  v-flow slice plan 001-autonomous-agent-vflow --strategy manual --from slicing/variants/vsaf.yaml --as vsaf --created-by agent  (exit 1, 126ms) ──
+
+❌ Variant "vsaf" đã tồn tại
+   → Thêm --overwrite hoặc đặt tên khác với --as
+
+
+── 2026-11-03T08:48:36.560Z  v-flow slice plan 001-autonomous-agent-vflow --strategy manual --from slicing/variants/vsaf.yaml --as vsaf --created-by agent --overwrite  (exit 1, 110ms) ──
+
+❌ Không thấy file slicing/variants/vsaf.yaml
+
+
+── 2026-11-03T08:48:42.536Z  v-flow slice plan 001-autonomous-agent-vflow --strategy manual --from .v-flow/features/001-autonomous-agent-vflow/slicing/variants/vsaf.yaml --as vsaf --created-by agent --overwrite  (exit 0, 157ms) ──
+
+✂️  Variant vsaf (manual)
+
+   SLICE-1   operator login tracer [AFK]
+             luồng: UC-04-A1, UC-04.main · task: T-001, T-002, T-013 · sau: —
+   SLICE-2   password reset [AFK]
+             luồng: — · task: — · sau: SLICE-1
+   SLICE-3   users admin [AFK]
+             luồng: — · task: — · sau: SLICE-1
+   SLICE-4   workspace lifecycle api [AFK]
+             luồng: — · task: — · sau: SLICE-1
+   SLICE-5   home shell [AFK]
+             luồng: — · task: — · sau: SLICE-4
+   SLICE-6   agent control plane [AFK]
+             luồng: — · task: — · sau: SLICE-4
+   SLICE-7   realtime activity [AFK]
+             luồng: — · task: — · sau: SLICE-5, SLICE-6
+   SLICE-8   dashboard runs [AFK]
+             luồng: — · task: — · sau: SLICE-5, SLICE-7
+   SLICE-9   tiktok browser actions [HITL]
+             luồng: — · task: — · sau: SLICE-6
+   SLICE-10  chrome extension bridge [HITL]
+             luồng: — · task: — · sau: SLICE-9
+   SLICE-11  gemini llm client [HITL]
+             luồng: — · task: — · sau: SLICE-6
+   SLICE-12  inbox ingestion [AFK]
+             luồng: UC-01.main · task: T-003 · sau: SLICE-9
+   SLICE-13  auto reply [AFK]
+             luồng: UC-01-E1, UC-01.main, UC-01-E3, UC-01-A1 · task: T-005, T-004, T-007, T-008 · sau: SLICE-11, SLICE-12
+   SLICE-14  takeover conversations [AFK]
+             luồng: UC-01-E2, UC-02.main, UC-02-E1, UC-02-E2 · task: T-006, T-009, T-010 · sau: SLICE-7, SLICE-13
+   SLICE-15  logs health [AFK]
+             luồng: — · task: — · sau: SLICE-5
+   SLICE-16  notifications alerts [HITL]
+             luồng: — · task: — · sau: SLICE-14, SLICE-15
+   SLICE-17  products [AFK]
+             luồng: — · task: — · sau: SLICE-5
+   SLICE-18  orders shipping [AFK]
+             luồng: UC-05.main · task: T-015 · sau: SLICE-5
+   SLICE-19  sheet export [HITL]
+             luồng: UC-05-E1 · task: T-016 · sau: SLICE-18
+   SLICE-20  behavior config [AFK]
+             luồng: — · task: — · sau: SLICE-5, SLICE-6
+   SLICE-21  followup [AFK]
+             luồng: UC-03.main, UC-03-E1, UC-03-E2 · task: T-011, T-012 · sau: SLICE-13, SLICE-20
+   SLICE-22  ops ci backup maintenance [AFK]
+             luồng: — · task: — · sau: SLICE-1
+   SLICE-23  cloudflare tunnel access [HITL]
+             luồng: UC-04-E1, UC-04-E2 · task: T-014 · sau: SLICE-1
+   SLICE-24  egw egress gateway [HITL]
+             luồng: — · task: — · sau: SLICE-5
+
+   ❌ Luật (profile strict): 33 lỗi, 18 cảnh báo
+      ✖ R2-flow-coverage (SLICE-12): Luồng UC-01.main nằm ở nhiều slice: SLICE-12, SLICE-13
+      ✖ R4-demoable (SLICE-2): SLICE-2 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-3): SLICE-3 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-4): SLICE-4 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-5): SLICE-5 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-6): SLICE-6 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-7): SLICE-7 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-8): SLICE-8 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-9): SLICE-9 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-10): SLICE-10 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-11): SLICE-11 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-15): SLICE-15 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-16): SLICE-16 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-17): SLICE-17 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-20): SLICE-20 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-22): SLICE-22 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ✖ R4-demoable (SLICE-24): SLICE-24 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R7-thinness (SLICE-1): [foundation] SLICE-1 trộn task [FOUNDATION] (T-001, T-002) với task phục vụ luồng — nên đưa về SLICE-0
+      ! R8-size (SLICE-2): SLICE-2 có 0 điểm < min_points 2
+      ! R8-size (SLICE-3): SLICE-3 có 0 điểm < min_points 2
+      … và 31 vi phạm khác
+   slice_count=24 · points_per_slice=1.5 / 11 · size_cv=1.88 · first_demo_points=7 · foundation_ratio=0 · critical_path=8 · parallel_width=8 · cross_slice_ratio=0.53 · uc_spread=1.6 · rework_exposure=12.07
+
+   → /home/duymanh/lab/autonomous-agent-vflow/.v-flow/features/001-autonomous-agent-vflow/slicing/variants/vsaf.yaml
+
+
+── 2026-11-03T08:49:38.500Z  v-flow slice plan 001-autonomous-agent-vflow --strategy manual --from .v-flow/features/001-autonomous-agent-vflow/slicing/variants/vsaf.yaml --as vsaf --created-by agent --overwrite  (exit 0, 126ms) ──
+
+✂️  Variant vsaf (manual)
+
+   SLICE-1   operator login tracer [AFK]
+             luồng: UC-04-A1, UC-04.main · task: T-001, T-002, T-013 · sau: —
+   SLICE-2   password reset [AFK]
+             luồng: — · task: — · sau: SLICE-1
+   SLICE-3   users admin [AFK]
+             luồng: — · task: — · sau: SLICE-1
+   SLICE-4   workspace lifecycle api [AFK]
+             luồng: — · task: — · sau: SLICE-1
+   SLICE-5   home shell [AFK]
+             luồng: — · task: — · sau: SLICE-4
+   SLICE-6   agent control plane [AFK]
+             luồng: — · task: — · sau: SLICE-4
+   SLICE-7   realtime activity [AFK]
+             luồng: — · task: — · sau: SLICE-5, SLICE-6
+   SLICE-8   dashboard runs [AFK]
+             luồng: — · task: — · sau: SLICE-5, SLICE-7
+   SLICE-9   tiktok browser actions [HITL]
+             luồng: — · task: — · sau: SLICE-6
+   SLICE-10  chrome extension bridge [HITL]
+             luồng: — · task: — · sau: SLICE-9
+   SLICE-11  gemini llm client [HITL]
+             luồng: — · task: — · sau: SLICE-6
+   SLICE-12  inbox ingestion [AFK]
+             luồng: UC-01.main · task: T-003 · sau: SLICE-9
+   SLICE-13  auto reply [AFK]
+             luồng: UC-01-E1, UC-01-E3, UC-01-A1 · task: T-005, T-004, T-007, T-008 · sau: SLICE-11, SLICE-12
+   SLICE-14  takeover conversations [AFK]
+             luồng: UC-01-E2, UC-02.main, UC-02-E1, UC-02-E2 · task: T-006, T-009, T-010 · sau: SLICE-7, SLICE-13
+   SLICE-15  logs health [AFK]
+             luồng: — · task: — · sau: SLICE-5
+   SLICE-16  notifications alerts [HITL]
+             luồng: — · task: — · sau: SLICE-14, SLICE-15
+   SLICE-17  products [AFK]
+             luồng: — · task: — · sau: SLICE-5
+   SLICE-18  orders shipping [AFK]
+             luồng: UC-05.main · task: T-015 · sau: SLICE-5
+   SLICE-19  sheet export [HITL]
+             luồng: UC-05-E1 · task: T-016 · sau: SLICE-18
+   SLICE-20  behavior config [AFK]
+             luồng: — · task: — · sau: SLICE-5, SLICE-6
+   SLICE-21  followup [AFK]
+             luồng: UC-03.main, UC-03-E1, UC-03-E2 · task: T-011, T-012 · sau: SLICE-13, SLICE-20
+   SLICE-22  ops ci backup maintenance [AFK]
+             luồng: — · task: — · sau: SLICE-1
+   SLICE-23  cloudflare tunnel access [HITL]
+             luồng: UC-04-E1, UC-04-E2 · task: T-014 · sau: SLICE-1
+   SLICE-24  egw egress gateway [HITL]
+             luồng: — · task: — · sau: SLICE-5
+
+   ❌ Luật (profile strict): 16 lỗi, 34 cảnh báo
+      ! R4-demoable (SLICE-2): SLICE-2 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-3): SLICE-3 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-4): SLICE-4 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-5): SLICE-5 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-6): SLICE-6 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-7): SLICE-7 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-8): SLICE-8 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-9): SLICE-9 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-10): SLICE-10 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-11): SLICE-11 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-15): SLICE-15 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-16): SLICE-16 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-17): SLICE-17 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-20): SLICE-20 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-22): SLICE-22 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-24): SLICE-24 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R7-thinness (SLICE-1): [foundation] SLICE-1 trộn task [FOUNDATION] (T-001, T-002) với task phục vụ luồng — nên đưa về SLICE-0
+      ! R8-size (SLICE-2): SLICE-2 có 0 điểm < min_points 2
+      ! R8-size (SLICE-3): SLICE-3 có 0 điểm < min_points 2
+      ! R8-size (SLICE-4): SLICE-4 có 0 điểm < min_points 2
+      … và 30 vi phạm khác
+   slice_count=24 · points_per_slice=1.5 / 11 · size_cv=1.88 · first_demo_points=7 · foundation_ratio=0 · critical_path=8 · parallel_width=8 · cross_slice_ratio=0.53 · uc_spread=1.8 · rework_exposure=12.07
+
+   → /home/duymanh/lab/autonomous-agent-vflow/.v-flow/features/001-autonomous-agent-vflow/slicing/variants/vsaf.yaml
+
+
+── 2026-11-03T08:49:42.059Z  v-flow slice check 001-autonomous-agent-vflow --variant vsaf --json  (exit 0, 116ms) ──
+{
+  "variant": "vsaf",
+  "stale": false,
+  "profile": "strict",
+  "violations": [
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R7-thinness",
+      "severity": "warn",
+      "slice": "SLICE-1",
+      "units": [
+        "T-001",
+        "T-002"
+      ],
+      "message": "[foundation] SLICE-1 trộn task [FOUNDATION] (T-001, T-002) với task phục vụ luồng — nên đưa về SLICE-0"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-13",
+      "message": "SLICE-13 có 11 điểm > max_points 10"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 chưa có TC nào (suy ra từ task/AC của slice)"
+    }
+  ],
+  "errorCount": 16,
+  "warnCount": 34,
+  "pass": false
+}
+
+── 2026-11-03T08:49:45.769Z  v-flow slice check 001-autonomous-agent-vflow --variant vsaf --json  (exit 0, 117ms) ──
+{
+  "variant": "vsaf",
+  "stale": false,
+  "profile": "strict",
+  "violations": [
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R7-thinness",
+      "severity": "warn",
+      "slice": "SLICE-1",
+      "units": [
+        "T-001",
+        "T-002"
+      ],
+      "message": "[foundation] SLICE-1 trộn task [FOUNDATION] (T-001, T-002) với task phục vụ luồng — nên đưa về SLICE-0"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-13",
+      "message": "SLICE-13 có 11 điểm > max_points 10"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "error",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 chưa có TC nào (suy ra từ task/AC của slice)"
+    }
+  ],
+  "errorCount": 16,
+  "warnCount": 34,
+  "pass": false
+}
+
+── 2026-11-03T08:49:55.455Z  v-flow slice check 001-autonomous-agent-vflow --variant vsaf --json  (exit 0, 96ms) ──
+{
+  "variant": "vsaf",
+  "stale": false,
+  "profile": "strict",
+  "violations": [
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R7-thinness",
+      "severity": "warn",
+      "slice": "SLICE-1",
+      "units": [
+        "T-001",
+        "T-002"
+      ],
+      "message": "[foundation] SLICE-1 trộn task [FOUNDATION] (T-001, T-002) với task phục vụ luồng — nên đưa về SLICE-0"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-13",
+      "message": "SLICE-13 có 11 điểm > max_points 10"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 chưa có TC nào (suy ra từ task/AC của slice)"
+    }
+  ],
+  "errorCount": 0,
+  "warnCount": 50,
+  "pass": true
+}
+
+── 2026-11-03T08:49:59.262Z  v-flow slice use 001-autonomous-agent-vflow vsaf  (exit 1, 97ms) ──
+
+❌ Không thể đổi sang "vsaf": "main-first" đang khóa
+   → Thêm --unlock --reason "…" (lý do được ghi vào _session.md)
+
+
+── 2026-11-03T08:49:59.407Z  v-flow slice use 001-autonomous-agent-vflow vsaf --lock --by TechLead  (exit 1, 94ms) ──
+
+❌ Không thể đổi sang "vsaf": "main-first" đang khóa
+   → Thêm --unlock --reason "…" (lý do được ghi vào _session.md)
+
+
+── 2026-11-03T08:50:09.775Z  v-flow slice show 001-autonomous-agent-vflow --variant vsaf  (exit 0, 131ms) ──
+
+── 2026-11-03T08:50:09.962Z  v-flow slice show 001-autonomous-agent-vflow --variant vsaf --format mermaid  (exit 0, 124ms) ──
+
+── 2026-11-03T08:56:03.018Z  v-flow slice check 001-autonomous-agent-vflow --variant main-first --json  (exit 0, 88ms) ──
+{
+  "variant": "main-first",
+  "stale": false,
+  "profile": "strict",
+  "violations": [
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 có 1 điểm < min_points 2"
+    }
+  ],
+  "errorCount": 0,
+  "warnCount": 1,
+  "pass": true
+}
+
+── 2026-11-03T08:56:03.155Z  v-flow slice check 001-autonomous-agent-vflow --variant vsaf --json  (exit 0, 85ms) ──
+{
+  "variant": "vsaf",
+  "stale": false,
+  "profile": "strict",
+  "violations": [
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R7-thinness",
+      "severity": "warn",
+      "slice": "SLICE-1",
+      "units": [
+        "T-001",
+        "T-002"
+      ],
+      "message": "[foundation] SLICE-1 trộn task [FOUNDATION] (T-001, T-002) với task phục vụ luồng — nên đưa về SLICE-0"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-13",
+      "message": "SLICE-13 có 11 điểm > max_points 10"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 chưa có TC nào (suy ra từ task/AC của slice)"
+    }
+  ],
+  "errorCount": 0,
+  "warnCount": 50,
+  "pass": true
+}
+
+── 2026-11-03T08:56:07.831Z  v-flow slice compare 001-autonomous-agent-vflow  (exit 0, 121ms) ──
+
+→ /home/duymanh/lab/autonomous-agent-vflow/.v-flow/features/001-autonomous-agent-vflow/slicing/compare.md
+
+── 2026-11-03T09:15:03.635Z  v-flow slice import-vsaf 001-autonomous-agent-vflow --check  (exit 0, 116ms) ──
+
+🧩 VSAF → V-Flow: 24 manifest → variant vsaf
+
+   Audit VSAF (G1–G7)
+   PASS  G1 Coverage — 78/78 unit thuộc đúng một slice
+   PASS  G2 Demoability — 24/24 slice có câu demo
+   PASS  G3 DAG — mọi ref hợp lệ, không có chu trình
+   PASS  G4 Type marked — 17 AFK / 7 HITL, mọi HITL có lý do seam
+   PASS  G5 Story-mappable — mọi unit non-contract có planned story ref
+   người duyệt  G6 AFK/HITL purity — người duyệt xác nhận: mọi unit buộc-HITL nằm trong 7 slice HITL (SLICE-9, SLICE-10, SLICE-11, SLICE-16, SLICE-19, SLICE-23, SLICE-24), không unit external nào bị bó với unit in-house vốn demo được mà không cần nó
+   người duyệt  G7 Thinness — người duyệt xác nhận seam: slice cắt ≥3 loại tầng = SLICE-1, SLICE-7, SLICE-10, SLICE-16 (tracer bullet đầu được phép; slice khác thì xem lại seam)
+
+   Ánh xạ slice → task V-Flow
+   SLICE-1   13 WBS unit · task: T-001, T-002, T-013 · luồng: UC-04-A1, UC-04.main
+   SLICE-2   1 WBS unit · task: — · luồng: —
+   SLICE-3   2 WBS unit · task: — · luồng: —
+   SLICE-4   3 WBS unit · task: — · luồng: —
+   SLICE-22  3 WBS unit · task: — · luồng: —
+   SLICE-23  2 WBS unit · task: T-014 · luồng: UC-04-E1, UC-04-E2
+   SLICE-5   4 WBS unit · task: — · luồng: —
+   SLICE-6   3 WBS unit · task: — · luồng: —
+   SLICE-7   3 WBS unit · task: — · luồng: —
+   SLICE-9   3 WBS unit · task: — · luồng: —
+   SLICE-11  2 WBS unit · task: — · luồng: —
+   SLICE-15  2 WBS unit · task: — · luồng: —
+   SLICE-17  3 WBS unit · task: — · luồng: —
+   SLICE-18  3 WBS unit · task: T-015 · luồng: UC-05.main
+   SLICE-20  3 WBS unit · task: — · luồng: —
+   SLICE-24  2 WBS unit · task: — · luồng: —
+   SLICE-8   4 WBS unit · task: — · luồng: —
+   SLICE-10  5 WBS unit · task: — · luồng: —
+   SLICE-12  3 WBS unit · task: T-003 · luồng: UC-01.main
+   SLICE-19  2 WBS unit · task: T-016 · luồng: UC-05-E1
+   SLICE-13  3 WBS unit · task: T-005, T-004, T-007, T-008 · luồng: UC-01-E1, UC-01-E3, UC-01-A1
+   SLICE-14  4 WBS unit · task: T-006, T-009, T-010 · luồng: UC-01-E2, UC-02.main, UC-02-E1, UC-02-E2
+   SLICE-21  1 WBS unit · task: T-011, T-012 · luồng: UC-03.main, UC-03-E1, UC-03-E2
+   SLICE-16  4 WBS unit · task: — · luồng: —
+
+   --check: không ghi file.
+
+
+── 2026-11-03T09:15:18.859Z  v-flow slice import-vsaf 001-autonomous-agent-vflow --overwrite --created-by vsaf  (exit 0, 110ms) ──
+
+🧩 VSAF → V-Flow: 24 manifest → variant vsaf
+
+   Audit VSAF (G1–G7)
+   PASS  G1 Coverage — 78/78 unit thuộc đúng một slice
+   PASS  G2 Demoability — 24/24 slice có câu demo
+   PASS  G3 DAG — mọi ref hợp lệ, không có chu trình
+   PASS  G4 Type marked — 17 AFK / 7 HITL, mọi HITL có lý do seam
+   PASS  G5 Story-mappable — mọi unit non-contract có planned story ref
+   người duyệt  G6 AFK/HITL purity — người duyệt xác nhận: mọi unit buộc-HITL nằm trong 7 slice HITL (SLICE-9, SLICE-10, SLICE-11, SLICE-16, SLICE-19, SLICE-23, SLICE-24), không unit external nào bị bó với unit in-house vốn demo được mà không cần nó
+   người duyệt  G7 Thinness — người duyệt xác nhận seam: slice cắt ≥3 loại tầng = SLICE-1, SLICE-7, SLICE-10, SLICE-16 (tracer bullet đầu được phép; slice khác thì xem lại seam)
+
+   Ánh xạ slice → task V-Flow
+   SLICE-1   13 WBS unit · task: T-001, T-002, T-013 · luồng: UC-04-A1, UC-04.main
+   SLICE-2   1 WBS unit · task: — · luồng: —
+   SLICE-3   2 WBS unit · task: — · luồng: —
+   SLICE-4   3 WBS unit · task: — · luồng: —
+   SLICE-22  3 WBS unit · task: — · luồng: —
+   SLICE-23  2 WBS unit · task: T-014 · luồng: UC-04-E1, UC-04-E2
+   SLICE-5   4 WBS unit · task: — · luồng: —
+   SLICE-6   3 WBS unit · task: — · luồng: —
+   SLICE-7   3 WBS unit · task: — · luồng: —
+   SLICE-9   3 WBS unit · task: — · luồng: —
+   SLICE-11  2 WBS unit · task: — · luồng: —
+   SLICE-15  2 WBS unit · task: — · luồng: —
+   SLICE-17  3 WBS unit · task: — · luồng: —
+   SLICE-18  3 WBS unit · task: T-015 · luồng: UC-05.main
+   SLICE-20  3 WBS unit · task: — · luồng: —
+   SLICE-24  2 WBS unit · task: — · luồng: —
+   SLICE-8   4 WBS unit · task: — · luồng: —
+   SLICE-10  5 WBS unit · task: — · luồng: —
+   SLICE-12  3 WBS unit · task: T-003 · luồng: UC-01.main
+   SLICE-19  2 WBS unit · task: T-016 · luồng: UC-05-E1
+   SLICE-13  3 WBS unit · task: T-005, T-004, T-007, T-008 · luồng: UC-01-E1, UC-01-E3, UC-01-A1
+   SLICE-14  4 WBS unit · task: T-006, T-009, T-010 · luồng: UC-01-E2, UC-02.main, UC-02-E1, UC-02-E2
+   SLICE-21  1 WBS unit · task: T-011, T-012 · luồng: UC-03.main, UC-03-E1, UC-03-E2
+   SLICE-16  4 WBS unit · task: — · luồng: —
+
+   ⚠️  Luật (profile strict): 0 lỗi, 50 cảnh báo
+      ! R4-demoable (SLICE-2): SLICE-2 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-3): SLICE-3 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-4): SLICE-4 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-22): SLICE-22 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-5): SLICE-5 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-6): SLICE-6 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-7): SLICE-7 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-9): SLICE-9 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-11): SLICE-11 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-15): SLICE-15 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-17): SLICE-17 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-20): SLICE-20 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-24): SLICE-24 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-8): SLICE-8 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-10): SLICE-10 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-16): SLICE-16 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R7-thinness (SLICE-1): [foundation] SLICE-1 trộn task [FOUNDATION] (T-001, T-002) với task phục vụ luồng — nên đưa về SLICE-0
+      ! R8-size (SLICE-2): SLICE-2 có 0 điểm < min_points 2
+      ! R8-size (SLICE-3): SLICE-3 có 0 điểm < min_points 2
+      ! R8-size (SLICE-4): SLICE-4 có 0 điểm < min_points 2
+      … và 30 vi phạm khác
+   slice_count=24 · points_per_slice=1.5 / 11 · size_cv=1.88 · first_demo_points=7 · foundation_ratio=0 · critical_path=8 · parallel_width=8 · cross_slice_ratio=0.53 · uc_spread=1.8 · rework_exposure=12.07
+
+   → /home/duymanh/lab/autonomous-agent-vflow/.v-flow/features/001-autonomous-agent-vflow/slicing/variants/vsaf.yaml
+   → /home/duymanh/lab/autonomous-agent-vflow/.v-flow/features/001-autonomous-agent-vflow/slicing/vsaf-map.md
+
+
+── 2026-11-03T09:15:22.317Z  v-flow slice check 001-autonomous-agent-vflow --variant vsaf --json  (exit 0, 88ms) ──
+{
+  "variant": "vsaf",
+  "stale": false,
+  "profile": "strict",
+  "violations": [
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R7-thinness",
+      "severity": "warn",
+      "slice": "SLICE-1",
+      "units": [
+        "T-001",
+        "T-002"
+      ],
+      "message": "[foundation] SLICE-1 trộn task [FOUNDATION] (T-001, T-002) với task phục vụ luồng — nên đưa về SLICE-0"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-13",
+      "message": "SLICE-13 có 11 điểm > max_points 10"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 chưa có TC nào (suy ra từ task/AC của slice)"
+    }
+  ],
+  "errorCount": 0,
+  "warnCount": 50,
+  "pass": true
+}
+
+── 2026-11-03T09:22:52.196Z  v-flow slice import-vsaf 001-autonomous-agent-vflow --overwrite --created-by vsaf  (exit 0, 113ms) ──
+
+🧩 VSAF → V-Flow: 24 manifest → variant vsaf
+
+   Audit VSAF (G1–G7)
+   PASS  G1 Coverage — 78/78 unit thuộc đúng một slice
+   PASS  G2 Demoability — 24/24 slice có câu demo
+   PASS  G3 DAG — mọi ref hợp lệ, không có chu trình
+   PASS  G4 Type marked — 17 AFK / 7 HITL, mọi HITL có lý do seam
+   PASS  G5 Story-mappable — 58 unit backend/frontend đều có planned story ref
+   người duyệt  G6 AFK/HITL purity — người duyệt xác nhận: mọi unit buộc-HITL nằm trong 7 slice HITL (SLICE-9, SLICE-10, SLICE-11, SLICE-16, SLICE-19, SLICE-23, SLICE-24), không unit external nào bị bó với unit in-house vốn demo được mà không cần nó
+   người duyệt  G7 Thinness — người duyệt xác nhận seam: slice cắt ≥3 loại tầng = SLICE-1, SLICE-7, SLICE-10, SLICE-16 (tracer bullet đầu được phép; slice khác thì xem lại seam)
+
+   Ánh xạ slice → task V-Flow
+   SLICE-1   13 WBS unit · task: T-001, T-002, T-013 · luồng: UC-04-A1, UC-04.main
+   SLICE-2   1 WBS unit · task: — · luồng: —
+   SLICE-3   2 WBS unit · task: — · luồng: —
+   SLICE-4   3 WBS unit · task: — · luồng: —
+   SLICE-22  3 WBS unit · task: — · luồng: —
+   SLICE-23  2 WBS unit · task: T-014 · luồng: UC-04-E1, UC-04-E2
+   SLICE-5   4 WBS unit · task: — · luồng: —
+   SLICE-6   3 WBS unit · task: — · luồng: —
+   SLICE-7   3 WBS unit · task: — · luồng: —
+   SLICE-9   3 WBS unit · task: — · luồng: —
+   SLICE-11  2 WBS unit · task: — · luồng: —
+   SLICE-15  2 WBS unit · task: — · luồng: —
+   SLICE-17  3 WBS unit · task: — · luồng: —
+   SLICE-18  3 WBS unit · task: T-015 · luồng: UC-05.main
+   SLICE-20  3 WBS unit · task: — · luồng: —
+   SLICE-24  2 WBS unit · task: — · luồng: —
+   SLICE-8   4 WBS unit · task: — · luồng: —
+   SLICE-10  5 WBS unit · task: — · luồng: —
+   SLICE-12  3 WBS unit · task: T-003 · luồng: UC-01.main
+   SLICE-19  2 WBS unit · task: T-016 · luồng: UC-05-E1
+   SLICE-13  3 WBS unit · task: T-005, T-004, T-007, T-008 · luồng: UC-01-E1, UC-01-E3, UC-01-A1
+   SLICE-14  4 WBS unit · task: T-006, T-009, T-010 · luồng: UC-01-E2, UC-02.main, UC-02-E1, UC-02-E2
+   SLICE-21  1 WBS unit · task: T-011, T-012 · luồng: UC-03.main, UC-03-E1, UC-03-E2
+   SLICE-16  4 WBS unit · task: — · luồng: —
+
+   ⚠️  Luật (profile strict): 0 lỗi, 50 cảnh báo
+      ! R4-demoable (SLICE-2): SLICE-2 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-3): SLICE-3 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-4): SLICE-4 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-22): SLICE-22 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-5): SLICE-5 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-6): SLICE-6 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-7): SLICE-7 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-9): SLICE-9 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-11): SLICE-11 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-15): SLICE-15 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-17): SLICE-17 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-20): SLICE-20 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-24): SLICE-24 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-8): SLICE-8 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-10): SLICE-10 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R4-demoable (SLICE-16): SLICE-16 không phục vụ luồng nào (chỉ SLICE-0 được phép)
+      ! R7-thinness (SLICE-1): [foundation] SLICE-1 trộn task [FOUNDATION] (T-001, T-002) với task phục vụ luồng — nên đưa về SLICE-0
+      ! R8-size (SLICE-2): SLICE-2 có 0 điểm < min_points 2
+      ! R8-size (SLICE-3): SLICE-3 có 0 điểm < min_points 2
+      ! R8-size (SLICE-4): SLICE-4 có 0 điểm < min_points 2
+      … và 30 vi phạm khác
+   slice_count=24 · points_per_slice=1.5 / 11 · size_cv=1.88 · first_demo_points=7 · foundation_ratio=0 · critical_path=8 · parallel_width=8 · cross_slice_ratio=0.53 · uc_spread=1.8 · rework_exposure=12.07
+
+   → /home/duymanh/lab/autonomous-agent-vflow/.v-flow/features/001-autonomous-agent-vflow/slicing/variants/vsaf.yaml
+   → /home/duymanh/lab/autonomous-agent-vflow/.v-flow/features/001-autonomous-agent-vflow/slicing/vsaf-map.md
+
+
+── 2026-11-03T09:22:52.361Z  v-flow slice check 001-autonomous-agent-vflow --variant vsaf --json  (exit 0, 115ms) ──
+{
+  "variant": "vsaf",
+  "stale": false,
+  "profile": "strict",
+  "violations": [
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R4-demoable",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 không phục vụ luồng nào (chỉ SLICE-0 được phép)"
+    },
+    {
+      "rule": "R7-thinness",
+      "severity": "warn",
+      "slice": "SLICE-1",
+      "units": [
+        "T-001",
+        "T-002"
+      ],
+      "message": "[foundation] SLICE-1 trộn task [FOUNDATION] (T-001, T-002) với task phục vụ luồng — nên đưa về SLICE-0"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-13",
+      "message": "SLICE-13 có 11 điểm > max_points 10"
+    },
+    {
+      "rule": "R8-size",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 có 0 điểm < min_points 2"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-2",
+      "message": "SLICE-2 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-3",
+      "message": "SLICE-3 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-4",
+      "message": "SLICE-4 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-22",
+      "message": "SLICE-22 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-5",
+      "message": "SLICE-5 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-6",
+      "message": "SLICE-6 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-7",
+      "message": "SLICE-7 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-9",
+      "message": "SLICE-9 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-11",
+      "message": "SLICE-11 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-15",
+      "message": "SLICE-15 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-17",
+      "message": "SLICE-17 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-20",
+      "message": "SLICE-20 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-24",
+      "message": "SLICE-24 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-8",
+      "message": "SLICE-8 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-10",
+      "message": "SLICE-10 chưa có TC nào (suy ra từ task/AC của slice)"
+    },
+    {
+      "rule": "R9-has-tests",
+      "severity": "warn",
+      "slice": "SLICE-16",
+      "message": "SLICE-16 chưa có TC nào (suy ra từ task/AC của slice)"
+    }
+  ],
+  "errorCount": 0,
+  "warnCount": 50,
+  "pass": true
+}
