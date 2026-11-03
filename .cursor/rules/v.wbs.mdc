@@ -1,0 +1,100 @@
+---
+globs: *
+description: "WBS Synthesizer — phân rã codebase thành project_wbs.md chuẩn VSAF (Work Unit + Function Decomposition Tree)"
+phase: "U.1"
+agent: "wbs-agent"
+---
+
+# /v.wbs [--refresh] [--check]
+
+> Bước **U.1** — chạy sau U.0 (`/v.understand`), **trước** `/v.slice --vsaf`.
+> Sinh `.v-flow/architecture/project_wbs.md`: cây phân rã chức năng **as-built** của toàn hệ thống
+> theo quy chuẩn Work Unit của VSAF, để động cơ cắt lát `ntapp-slice-planning` đọc được.
+> Hướng dẫn tích hợp: [`docs/vsaf-hybrid-slicing.md`](../docs/vsaf-hybrid-slicing.md) §2.
+
+## Điều kiện tiên quyết
+
+- `.v-flow/context.md` đã có (chưa có → chạy `/v.understand --all` trước)
+- `.bmm-config.yaml` ở thư mục gốc (cầu nối path cho skill VSAF — sinh từ
+  `.v-flow/templates/bmm-config-template.yaml`, xem `docs/vsaf-hybrid-slicing.md` §3)
+- Module Cards `.v-flow/modules/` **khuyến nghị** có; thiếu thì vẫn chạy được nhưng
+  mô tả nghiệp vụ của unit sẽ mỏng → ghi `[⚠️ AI-inferred]` ở unit bị suy đoán
+
+## Execution
+
+1. **Dò nguồn** (không đoán khi còn đọc được):
+   - Cây thư mục cấp 1–2 của repo; file cấu hình `compose.yaml`, `pyproject.toml`,
+     `*/package.json`, `deploy/`, `.github/workflows/`
+   - Database: `storage/schema.sql`, `storage/migrations/*`, RLS/tenancy
+   - Backend: router / service / adapter / LLM client / worker entrypoint
+   - Frontend: `src/routes/*` → Screen, `src/components/*` → Widget, `src/lib/*` → client dùng chung
+   - Hợp đồng: REST/WS/SSE nội bộ + mọi lời gọi ra bên thứ ba (LLM, webhook, SMTP, push, tunnel)
+2. **Đặt mã Work Unit** (mỗi thành phần đúng **một** unit):
+
+   | Prefix | Dùng cho |
+   |:--|:--|
+   | `OPS-<NN>` | Hạ tầng: container, reverse proxy, systemd, tunnel, backup, CI, packaging, entrypoint |
+   | `BE-DAT-<NN>` | Tầng dữ liệu: schema, migration, RLS, repository, domain model |
+   | `BE-<MOD>-<NN>` | Nghiệp vụ backend: service, API router, LLM engine, platform adapter |
+   | `INT-<MOD>-<NN>` | Hợp đồng tích hợp nội bộ / bên thứ ba |
+   | `SCR-<NAME>` | Màn hình SPA |
+   | `WGT-<NAME>` | Component UI tái sử dụng / nhúng vào Screen |
+
+3. **Ghi `.v-flow/architecture/project_wbs.md`** theo `.v-flow/templates/project-wbs-template.md`:
+   front-matter `approved_by` / `approved_at`, Function Decomposition Tree, Work Unit Catalog
+   (`id`, tên, `consumes`, `used_by`, `evidence_path`, `tasks`), bảng thống kê coverage.
+4. **Ghi `.v-flow/architecture/wbs-task-map.yaml`** — ánh xạ unit ↔ task V-Flow (`T-xxx`) nếu
+   feature hiện tại đã có `tasks.md`. Unit không có task tương ứng thì **bỏ khỏi map**, không bịa.
+   Đây là đầu vào bắt buộc của `v-flow slice import-vsaf`.
+5. **Tự kiểm coverage**: mọi thư mục mã nguồn cấp 1 phải có ít nhất một unit nhận
+   trách nhiệm. Thiếu → bổ sung unit, **không** để thư mục mồ côi. Liệt kê rõ phần cố ý bỏ qua
+   (`__pycache__`, `.venv`, `node_modules`, artifact build).
+6. **Cổng duyệt WBS**: điền `approved_by`. Agent được điền `AutoSystem (V-Flow WBS Synthesizer)`
+   cho baseline as-built; người duyệt đổi thành tên mình khi đã soát.
+
+## Options
+
+### --refresh
+WBS đã có → **cập nhật** thay vì viết lại: giữ nguyên ID đã có (ID là hợp đồng, slice manifest
+và `wbs-task-map.yaml` trỏ vào nó), chỉ thêm unit mới / sửa `evidence_path` / sửa quan hệ.
+**Không bao giờ đánh số lại.** Unit biến mất khỏi code → giữ ID, ghi `[deprecated]`.
+
+### --check
+Chỉ đối chiếu WBS hiện có với codebase và báo lệch (unit trỏ tới file không còn tồn tại,
+thư mục mã nguồn chưa có unit nào). Không ghi file.
+
+## 🔀 Routing Rules — Sau WBS
+
+```
+project_wbs.md có approved_by
+  → Route: /v.slice --vsaf (cắt lát theo seam test + G1–G8 của VSAF)
+
+Thiếu context.md / Module Cards
+  → Route: /v.understand --all rồi /v.wbs lại
+
+WBS lệch code (--check báo lỗi)
+  → Route: /v.wbs --refresh
+```
+
+## Cập nhật State & Session
+
+**Append vào `_session.md`** của feature đang mở (nếu có):
+```markdown
+### [U.1] WBS Synthesis — [YYYY-MM-DD]
+- **Unit sinh ra**: [n] (OPS/BE-DAT/BE-xxx/INT/SCR/WGT: [...])
+- **Coverage**: [n]/[n] thư mục mã nguồn cấp 1 có unit nhận trách nhiệm
+- **Ánh xạ task**: [n] unit có task V-Flow tương ứng / [n] unit as-built
+- **Routing**: → /v.slice --vsaf
+```
+
+Ghi nhật ký: `v-flow log --feature <f> --phase U.1 --actor wbs-agent --event end "WBS <n> unit"`
+
+---
+
+## Ví dụ
+
+```
+/v.wbs                ← sinh baseline as-built lần đầu
+/v.wbs --refresh      ← code đã đổi, cập nhật mà giữ ID
+/v.wbs --check        ← chỉ soát lệch giữa WBS và code
+```

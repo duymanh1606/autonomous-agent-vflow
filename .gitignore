@@ -43,3 +43,7 @@ GIAI_THICH_CHI_TIET_AUTONOMOUS_AGENT.md
 
 # Bản đồ mã nguồn sinh cục bộ (scripts/gen_code_map.py) - tham chiếu nội bộ, không commit
 docs/CODE_MAP.md
+
+# Nhật ký hoạt động cục bộ của V-Flow — thay đổi mỗi lần chạy CLI,
+# để tracked thì repo không bao giờ sạch (benchmark guard sẽ chặn).
+.v-flow/logs/

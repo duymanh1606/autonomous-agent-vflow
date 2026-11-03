@@ -1,0 +1,31 @@
+# .v-flow/slicing.config.yaml — cấu hình bộ luật slice của V-Flow.
+# Thiếu file này thì CLI dùng DEFAULT_CONFIG (xem `v-flow slice strategies`).
+#
+# Chỉ khai những gì dự án cố ý đổi so với mặc định; phần còn lại kế thừa.
+
+enabled: true
+default_strategy: main-first
+
+profiles:
+  # ─── strict: cổng duyệt của người (`v-flow slice use` luôn chạy profile này) ───
+  # R4-demoable bị hạ xuống `warn` vì dự án chạy **hybrid V-Flow + VSAF** (xem
+  # docs/dac_ta_tich_hop_vflow_vsaf_slicing.md). Variant `vsaf` được cắt theo
+  # **WBS as-built toàn hệ thống** (78 unit), còn `spec.md`/`tasks.md` của feature
+  # hiện tại chỉ phủ 5 use case. Vì vậy một số slice as-built (ops/CI, products,
+  # orders UI, EGW…) hợp lệ mà **không phục vụ UC nào trong spec** — R4 coi đó là
+  # lỗi, nhưng với variant VSAF đó là thông tin, không phải sai.
+  #
+  # Phần "slice thiếu câu demo" của R4 (tương ứng G2) KHÔNG bị bỏ: adapter
+  # `.v-flow/scripts/vsaf_slice_sync.py` chặn cứng ở audit G2 trước khi emit,
+  # và `/v.slice --vsaf` chỉ chạy tiếp khi G1–G8 PASS.
+  strict:
+    R4-demoable: warn
+    # Cùng một gốc: slice as-built không có task trong `tasks.md` thì cũng không có
+    # TC nào trong `test-cases.md`. Trong VSAF, test của các unit đó sinh on-demand ở
+    # Stage 5 theo story của từng unit — không phải thiếu sót của cách cắt.
+    # Slice **có** task mà thiếu TC vẫn hiện ra ở cảnh báo và phải xử lý ở /v.check.
+    R9-has-tests: warn
+
+  # experiment giữ nguyên mặc định.
+
+seams: [foundation, ownership, resilience, read-write]

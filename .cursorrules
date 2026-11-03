@@ -64,6 +64,12 @@ All development artifacts are stored in `.v-flow/`:
 │       ├── test-cases.md    ← B.0b: Test Cases
 │       ├── validation-report.md ← R.0: Master Check
 │       └── metrics-report.md    ← M.0: Metrics
+├── architecture/           ← U.1: WBS as-built (bridge sang động cơ cắt lát VSAF)
+│   ├── project_wbs.md       ← Function Decomposition Tree + Work Unit Catalog
+│   └── wbs-task-map.yaml    ← Ánh xạ WBS unit ↔ task V-Flow (nguồn cho import-vsaf)
+├── slices/                  ← B.0c: SLICE-*.md chuẩn VSAF (tracer bullet, seam, AFK/HITL)
+│                            ← nạp vào variant bằng: v-flow slice import-vsaf <feature>
+├── slicing.config.yaml     ← Cấu hình bộ luật slice (profile strict/experiment, seams)
 └── incidents/               ← O.0: Operations
 ```
 
@@ -128,6 +134,7 @@ Safety-net tool-agnostic: `v-flow watch` giám sát `.v-flow/**` và log mọi t
 | `/v.help` | Any | **Help Agent — gợi ý bước tiếp theo dựa trên trạng thái dự án** |
 | `/v.understand` | U.0 | **Understand Agent — Multi-Layer Understanding (`--all`, `--module`, `--check`, `--refresh`)** |
 | `/v.import-ba-docs` | U.0d | **Import BA Docs Agent — Import tài liệu BA từ NotebookLM** |
+| `/v.wbs` | U.1 | **WBS Agent — phân rã codebase → `project_wbs.md` chuẩn VSAF (`--refresh`, `--check`)** |
 | `/v.constitution` | S.0a | Create/update project constitution (interactive) |
 | `/v.constitute` | S.0a | **Constitute Agent — AI scan → tự động draft `constitution.md` v2** |
 | `/v.specify` | S.1 | BA Agent — create spec + init `.flow-state.yaml` + `_session.md` (`--dual` for Dual BA loop) |
@@ -136,6 +143,8 @@ Safety-net tool-agnostic: `v-flow watch` giám sát `.v-flow/**` và log mọi t
 | `/v.ba-to-ptyc` | S.1.6 | **BA to PTYC Agent — spec.md → PTYC.docx (Phân tích Yêu cầu chuẩn ISO), optional Doc Export** |
 | `/v.plan` | B.0a | Plan Agent — create technical plan + tasks (`--with-security`, `--with-ux`, `--with-api`) |
 | `/v.test` | B.0b | Test Agent — create test cases from spec |
+| `/v.slice` | B.0c | Slice Planning — cắt lát dọc demo được, so sánh variant, người khóa (`--strategy`, `--vsaf`, `--experiment`) |
+| `/v.code-to-vsaf-slice` | U.0→R.0 | **Trọn gói code → slice chuẩn VSAF: Understand → WBS → Specify → Plan+Test → Slice VSAF → Master Check** |
 | `/v.slice` | B.0c | **Slice Planning — cắt feature thành lát dọc demo được, so sánh variant, người chọn + khóa (`v-flow slice …`)** |
 | `/v.check` | R.0 | Master Check — cross-validate Spec ↔ Plan ↔ Tests + explicit routing |
 | `/v.implement` | B.1 | Implement Agent — TDD coding, concerns handling (`--yolo` for auto-mode) |
@@ -184,6 +193,7 @@ Hotfix:     O.0 → B.1 → R.1 → O.0          ← production incident P1/P2
 When activated via slash commands, adopt the specific agent persona:
 - **Help Agent**: Navigator — đọc `.flow-state.yaml`, gợi ý bước tiếp theo dựa trên trạng thái pipeline
 - **Understand Agent**: Multi-Layer Scanner — generate context.md (Tầng 1) + Module Cards (Tầng 2), đánh dấu `[⚠️ AI-inferred]`; tự kiểm card bằng CLI: `v-flow validate --module-cards <m>` (lint) + `score-card <m>` (điểm objective) + `dev-quiz <m>` (answer key từ graph)
+- **WBS Agent**: WBS Synthesizer — phân rã codebase thành Work Unit chuẩn VSAF (`OPS/BE-DAT/BE-*/INT/SCR/WGT`); mô tả as-built chứ không as-wished, mỗi unit có `evidence_path` thật, quan hệ `consumes`/`used_by` nhất quán hai chiều
 - **Import BA Docs Agent**: BA Docs Importer — trích xuất tài liệu BA từ NotebookLM, generate raw materials + AI drafts cho Module Cards
 - **Constitute Agent**: Constitution Drafter — infer từ code, để trống rõ ràng, không lý tưởng hóa
 - **BA Agent**: Business Analyst — focus on WHAT, not HOW; init `.flow-state.yaml` + `_session.md`. Dual BA mode: cập nhật spec sau mỗi round review. Auto-scan ambiguity và gợi ý `/v.prototype`
