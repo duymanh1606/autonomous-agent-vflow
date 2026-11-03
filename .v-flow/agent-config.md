@@ -18,20 +18,20 @@
 
 | Agent | Model | Temperature | Max Tokens | Ghi chú |
 |-------|-------|-------------|------------|---------|
-| BA Agent | [model-name] | 0.3 | 8192 | Advanced Elicitation |
-| BA Critic Agent | [model-name] | 0.3 | 8192 | Adversarial, fresh context |
-| Plan Agent | [model-name] | 0.2 | 16384 | |
-| Test Agent | [model-name] | 0.2 | 8192 | |
-| Master Check Agent | [model-name] | 0.1 | 16384 | Cần reasoning mạnh nhất |
-| Implement Agent | [model-name] | 0.1 | 32768 | Cần code generation mạnh |
-| **Review Agent** | [model-name] | 0.2 | 16384 | Adversarial, tìm ≥3 issues |
-| Understand Agent | [model-name] | 0.2 | 16384 | Codebase scan |
-| Constitute Agent | [model-name] | 0.3 | 8192 | Infer from code |
-| Sync Agent | [model-name] | 0.1 | 8192 | Diff analysis |
-| Metrics Agent | [model-name] | 0.2 | 8192 | Data collection |
-| Sprint Agent | [model-name] | 0.2 | 8192 | Planning |
-| Retrospective Agent | [model-name] | 0.3 | 8192 | Analysis |
-| Help/Status Agent | [model-name] | 0.2 | 4096 | Quick response |
+| BA Agent | sonnet | 0.3 | 8192 | Advanced Elicitation |
+| BA Critic Agent | sonnet | 0.3 | 8192 | Adversarial, fresh context |
+| Plan Agent | sonnet | 0.2 | 16384 | |
+| Test Agent | sonnet | 0.2 | 8192 | |
+| Master Check Agent | sonnet | 0.1 | 16384 | Cần reasoning mạnh nhất |
+| Implement Agent | sonnet | 0.1 | 32768 | Cần code generation mạnh |
+| **Review Agent** | sonnet | 0.2 | 16384 | Adversarial, tìm ≥3 issues |
+| Understand Agent | sonnet | 0.2 | 16384 | Codebase scan |
+| Constitute Agent | sonnet | 0.3 | 8192 | Infer from code |
+| Sync Agent | sonnet | 0.1 | 8192 | Diff analysis |
+| Metrics Agent | sonnet | 0.2 | 8192 | Data collection |
+| Sprint Agent | sonnet | 0.2 | 8192 | Planning |
+| Retrospective Agent | sonnet | 0.3 | 8192 | Analysis |
+| Help/Status Agent | sonnet | 0.2 | 4096 | Quick response |
 
 ---
 
