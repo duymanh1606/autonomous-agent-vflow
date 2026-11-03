@@ -70,3 +70,4 @@ echo ""
 echo "👉 Cách 2 (Terminal CLI):"
 echo "   Chạy: ./scripts/code-to-slice.sh"
 echo "=========================================================="
+

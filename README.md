@@ -6,43 +6,41 @@ Dự án áp dụng quy trình phát triển kết hợp **V Flow (Spec-Driven S
 
 ---
 
-## ⚡ Bắt đầu nhanh (Quickstart trong 1 bước)
+## ⚡ Hướng dẫn chạy nhanh (3 bước)
 
-Sau khi clone repo về, bạn chỉ cần chạy **1 lệnh duy nhất** để thiết lập toàn bộ môi trường (CLI, AI Skills, Python venv):
+Chỉ cần chạy tuần tự các lệnh sau:
 
 ```bash
+# 1. Clone repository
 git clone https://github.com/duymanh1606/autonomous-agent-vflow.git
 cd autonomous-agent-vflow
 
-# Cài đặt tự động toàn bộ môi trường và v-flow CLI
+# 2. Thiết lập môi trường trọn gói tự động
 ./scripts/bootstrap.sh
+
+# 3. Chạy quy trình (Dò code -> WBS as-built -> Chia 24 slices)
+./scripts/code-to-slice.sh
 ```
+
+> **Mẹo**: Nếu dùng AI CLI/IDE (**Claude Code**, **Cursor**, **Antigravity**), ở Bước 3 bạn có thể mở repo và gõ trực tiếp trong cửa sổ chat:
+> ```text
+> /v.code-to-vsaf-slice
+> ```
 
 ---
 
-## 🚀 Khởi chạy Quy trình Phát triển
+## 🔍 Tác dụng của lệnh `scripts/bootstrap.sh`
 
-Dự án đã nhúng sẵn:
-- **`v-flow` CLI**: Tự động liên kết từ `vendor/v-flow-cli` (đã tích hợp module `import-vsaf`).
-- **AI Skills & Agents**: Đầy đủ trong `.claude/`, `.cursor/`, `.agents/` (bao gồm cả skill `NTAPP-slice-planning`).
+Lệnh `./scripts/bootstrap.sh` là **script khởi tạo môi trường trọn gói 1 bước**. Nó giải quyết bài toán phụ thuộc ngoài để người mới clone repo về có thể chạy ngay mà không gặp lỗi thiếu công cụ:
 
-### Cách 1: Chạy tự động trong AI Chat (Claude Code / Cursor / Antigravity) — *Khuyên dùng*
-Mở repo này trong công cụ AI của bạn và gõ:
-
-```text
-/v.code-to-vsaf-slice
-```
-*AI sẽ tự động thực thi tuần tự:*
-1. **Dò code (U.0)**: Quét codebase sinh `context.md`, `constitution.md`, `Module Cards`.
-2. **Tổng hợp WBS (U.1)**: Phân rã 78 Work Units as-built thành `.v-flow/architecture/project_wbs.md`.
-3. **Đặc tả & Lập kế hoạch (S.1 & B.0)**: Sinh `spec.md` EARS, `plan.md`, `tasks.md`, `test-cases.md`.
-4. **Chia lát cắt VSAF (B.0c)**: Gọi động cơ Seam Test + 8 Invariants chia thành 24 lát cắt dọc `SLICE-*.md`.
-5. **Kiểm định chéo (R.0)**: Master Check kiểm tra ma trận và xuất báo cáo nghiệm thu.
-
-### Cách 2: Chạy qua Terminal Script
-```bash
-./scripts/code-to-slice.sh
-```
+1. **Kiểm tra môi trường Node.js**: Xác thực máy đã có Node.js (khuyến nghị $\ge$ v18).
+2. **Kích hoạt `v-flow` CLI nội bộ (`vendor/v-flow-cli`)**:
+   - Tự động cài đặt thư viện phụ thuộc cho gói CLI được nhúng sẵn trong repo (đã tích hợp module `import-vsaf` chuẩn VSAF).
+   - Thiết lập binary `v-flow` (qua `npm link` hoặc wrapper thực thi trực tiếp tại [`bin/v-flow`](bin/v-flow)) để terminal và các agent AI có thể gọi `v-flow` ngay lập tức mà không phụ thuộc gói npm public.
+3. **Tự động cấu hình file `.env`**: Khởi tạo file cấu hình `.env` từ `.env.example` nếu chưa có.
+4. **Chuẩn bị môi trường Python**:
+   - Tự nhận diện và chạy `uv sync` (nếu máy có `uv`).
+   - Nếu không có `uv`, tự tạo virtual environment `.venv` và cài đặt các dependencies cần thiết cho agent.
 
 ---
 
@@ -51,12 +49,12 @@ Mở repo này trong công cụ AI của bạn và gõ:
 ```text
 autonomous-agent-vflow/
 ├── bin/
-│   └── v-flow                  # Executable wrapper tự động gọi CLI
+│   └── v-flow                  # Executable wrapper tự động gọi CLI nội bộ
 ├── vendor/
-│   └── v-flow-cli/             # Lõi v-flow CLI kèm tính năng import-vsaf
+│   └── v-flow-cli/             # Lõi v-flow CLI (kèm tính năng import-vsaf)
 ├── scripts/
 │   ├── bootstrap.sh            # Script cài đặt môi trường tự động
-│   └── code-to-slice.sh        # Script khởi chạy pipeline
+│   └── code-to-slice.sh        # Script khởi chạy pipeline 1 lệnh
 ├── .bmm-config.yaml            # Cầu nối 3-layer cascade tích hợp VSAF vào Single-Repo
 ├── .v-flow/
 │   ├── context.md              # Kiến trúc hệ thống & No-go zones

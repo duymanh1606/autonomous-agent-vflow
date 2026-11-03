@@ -8,3 +8,4 @@ if [ ! -d "$ROOT_DIR/vendor/v-flow-cli/node_modules" ]; then
 fi
 
 exec node "$ROOT_DIR/vendor/v-flow-cli/cli/index.js" "$@"
+
